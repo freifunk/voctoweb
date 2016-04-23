@@ -19,6 +19,7 @@ class Recording < ActiveRecord::Base
   scope :video, -> { where(mime_type: MimeType::VIDEO) }
   scope :audio, -> { where(mime_type: MimeType::AUDIO) }
   scope :subtitle, -> { where(mime_type: MimeType::SUBTITLE) }
+  scope :slides, -> { where(mime_type: MimeType::SLIDES) }
   scope :html5, -> { where(html5: true) }
 
   after_save { update_conference_downloaded_count if downloaded? }
