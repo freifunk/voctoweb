@@ -20,12 +20,14 @@
 /Gemfile.lock.tags
 *.patch
 vendor/gems/
+/sbin
 
 # Ignore assets
 public/assets
 
 # Ignore secret tokens and configs
 config/database.yml
+config/puma.prod.rb
 db/seeds_live.rb
 .env.production
 .env.local
