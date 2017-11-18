@@ -6,6 +6,9 @@
           %img{src: image_path('frontend/voctocat.svg'), alt: 'media.ccc.de logo, a lucky cat holding a play icon'}
           media.freifunk.net
 
+    - if content_for?(:navbar)
+      = yield :navbar
+
     .nav.navbar-form.navbar-right.button-wrapper
       %a.form-control.btn.btn-default{href: '/about.html'}
         %span.icon.icon-info
