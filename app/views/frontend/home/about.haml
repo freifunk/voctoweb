@@ -123,7 +123,7 @@
 
   :javascript
     Handlebars.registerHelper("formatDate", function(datetime) {
-      var aDate = new Date(1000*datetime);
+      var aDate = new Date(datetime);
       return aDate.toLocaleString();
     });
     Handlebars.registerHelper("gb", function(bytes) {
@@ -133,7 +133,7 @@
       var source = $('#status-template').html();
       var template = Handlebars.compile(source);
       var target = $('#status');
-      $.get("https://cdn-api.media.ccc.de/", function(data,status,xhr){
+      $.get("https://cdn.media.freifunk.net/freifunk-logo.png", function(data,status,xhr){
         var html = template(data);
         target.html(html);
       }, "json");
