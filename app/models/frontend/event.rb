@@ -62,12 +62,14 @@ module Frontend
         .uniq.to_h.sort
     end
 
+    # used by player
     def videos_sorted_by_language
       self.recordings.video.sort_by { |x| (x.language == self.original_language ? 0 : 2) + (x.html5 ? 0 : 1) }
     end
 
+    # used for the hd and sd download buttons
     def video_for_download(filetype, high_quality: true)
-      self.recordings.video
+      self.recordings.video_without_slides
         .select { |x| x.filetype == filetype && x.high_quality == !!high_quality }
         .sort_by { |x| x.html5 ? 1 : 0 }
         .first
@@ -86,6 +88,22 @@ module Frontend
       return if audio_recordings.empty?
       seen = Hash[audio_recordings.map { |r| [r.mime_type, r] }]
       MimeType::AUDIO.each { |mt| return seen[mt] if seen.key?(mt) }
+      seen.first[1]
+    end
+
+    def slides_for_download(filetype)
+      self.recordings.slides
+        .select { |x| x.filetype == filetype }
+        .sort_by { |x| x.language == self.original_language ? '' : x.language }
+        .map { |x| [x.language, x] }
+        .to_h
+    end
+
+    def slide
+      slides = recordings.slides
+      return if slides.empty?
+      seen = Hash[slides.map { |r| [r.mime_type, r] }]
+      MimeType::SLIDES.each { |mt| return seen[mt] if seen.key?(mt) }
       seen.first[1]
     end
 

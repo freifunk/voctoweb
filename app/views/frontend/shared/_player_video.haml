@@ -1,0 +1,59 @@
+<!-- Mediaelement Player -->
+
+%video.video{controls: 'controls', 'data-id' => event.id, poster: event.poster_url, width: width, height: height}
+  - event.videos_sorted_by_language.each do |recording|
+    %source{type: recording.mime_type, src: h(recording.url), data: { lang: recording.language, quality: recording_quality(recording) }, title: recording_title(recording)}
+
+  - event.recordings.subtitle.each do |track|
+    %track{kind: "subtitles", src: h(track.cors_url), srclang: track.language_iso_639_1()}
+
+  %link{rel: "postroll", href: postroll_path(slug: event.slug)}
+
+  -# Flash fallback for browsers with flash, but without JavaScript… – to be deleted? --Andi
+  %object{ width: width, height: height, type: 'application/x-shockwave-flash', data: asset_url('mediaelement-flash-video.swf') }
+    %param{ name: 'allowFullScreen', value: 'true' }
+    %param{ name: 'flashvars', value: "controls=true&file=#{video_for_flash(event.videos_sorted_by_language)}" }
+
+    %p Your browser can't play this video file. Please download the file below and use a desktop player e.g. VLC.
+
+:javascript
+  $(function() {
+    var stamp = window.location.hash.split('#t=')[1] || window.location.hash.split('&t=')[1],
+        $video = $('video'),
+        promises = [];
+
+    $('video source').each(function() {
+      var $source = $(this);
+      // Prop always presents the fully resolved URL
+      promises.push(
+        MirrorbrainFix.selectMirror($source.prop('src'), function(mirror) {
+        $source.attr('src', mirror);
+      })
+      );
+    });
+
+    $.when.apply($, promises).done(function() {
+      $('video').mediaelementplayer({
+        usePluginFullScreen: true,
+        enableAutosize: true,
+        stretching: '#{stretching}',
+        features: ['skipback', 'playpause', 'jumpforward', 'progress', 'current', 'duration', 'tracks', 'volume', 'speed', 'sourcechooser', 'fullscreen', 'postroll'],
+        skipBackInterval: 15,
+        success: function (mediaElement) {
+          mediaElement.addEventListener('canplay', function () {
+            if(stamp) {
+              mediaElement.setCurrentTime(stamp);
+              stamp = null;
+            }
+          });
+          mediaElement.addEventListener('playing', function () {
+            $.post("/public/recordings/count", {event_id: $video.data('id'), src: mediaElement.src});
+          }, false);
+          mediaElement.addEventListener('pause', function() {
+            var hash = '#t='+Math.round(mediaElement.currentTime);
+            window.location.replaceHash(hash);
+          }, false);
+        }
+      });
+    });
+  })
