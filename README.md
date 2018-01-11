@@ -200,6 +200,10 @@ Copy and edit the configuration file `config/settings.yml.template` to `config/s
 
 You need to create a secret token for sessions, copy `env.example` to `.env.production` and edit.
 
+#### Asset creation
+
+Compile your assets with ```RAILS_ENV=production bin/rails assets:precompile```
+
 #### Database Creation & Fixtures import
 
 Setup your database in `config/database.yml` needed.
