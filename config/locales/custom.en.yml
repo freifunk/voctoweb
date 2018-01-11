@@ -1,14 +1,14 @@
 en:
   custom:
-    title: media.ccc.de -
-    news_title: media.ccc.de - NEWS
+    title: media.freifunk.net -
+    news_title: media.freifunk.net - NEWS
     rss:
       title:
-        atom: media.ccc.de - News
-        last100: media.ccc.de - RSS, last 100
-        lastyears: media.ccc.de - Podcast feed of the last two years
-        podcast_archive: media.ccc.de - Podcast archive feed
+        atom: media.freifunk.net - News
+        last100: media.freifunk.net - RSS, last 100
+        lastyears: media.freifunk.net - Podcast feed of the last two years
+        podcast_archive: media.freifunk.net - Podcast archive feed
     header:
-      author: CCC
-      description: Video Streaming Portal des Chaos Computer Clubs
-      keywords: Chaos Computer Club, Video, Media, Streaming, TV, Hacker
+      author: Freifunk
+      description: Video Streaming Portal of the Freifunk initiative
+      keywords: Freifunk, Video, Media, Streaming, TV, Hacker, Open Infrastructure
