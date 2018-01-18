@@ -3,24 +3,24 @@
 
 .container
 
-  %h1 About media.ccc.de
+  %h1 About media.freifunk.net
   %h3
     Feel free to download as much as you like, all our traffic is sponsored.
 
   =render 'frontend/shared/short_about'
 
   %p
-    If you are anyhow related to the Chaos Computer Club and would like us to convert and publish your video material on this website, feel free to contact us.
+    If you are anyhow related to the Freifunk community and would like us to convert and publish your video material on this website, feel free to contact us.
 
-    Whilst we hope you find the provided video material interesting and informative we can give no assurances or warranty regarding its quality. The opinions expressed in the video material do not necessarily state or reflect those of the Chaos Computer Club.
+    Whilst we hope you find the provided video material interesting and informative we can give no assurances or warranty regarding its quality. The opinions expressed in the video material do not necessarily state or reflect those of the Freifunk community.
 
   %b Contact:
-  %a{href: 'mailto:media@koeln.ccc.de'} media@koeln.ccc.de
+  %a{href: 'mailto:media@koeln.ccc.de'} media@freifunk.net
 
   %h2 Direct Download
 
   :markdown
-    You can download all files directly from our [CDN](https://cdn.media.ccc.de).
+    You can download all files directly from our [CDN](https://cdn.media.freifunk.net).
 
   %h2 Licenses
 
@@ -54,44 +54,32 @@
 
   %p
     :markdown
-      You can append `?mirrorlist` or `?mirrorstats` to all file URLs on our [CDN](https://cdn.media.ccc.de),
-      [like](https://cdn.media.ccc.de/congress/2016/webm-hd/33c3-8429-eng-deu-fra-33C3_Opening_Ceremony_webm-hd.webm?mirrorlist)
-      [this](https://cdn.media.ccc.de/congress/2016/webm-hd/33c3-8429-eng-deu-fra-33C3_Opening_Ceremony_webm-hd.webm?mirrorstats).
+      You can append `?mirrorlist` or `?mirrorstats` to all file URLs on our [CDN](https://cdn.media.freifunk.net),
+      [like](https://cdn.media.freifunk.net/d97d0ab8-90f9-42bb-bbb9-972afad2a122/18-hd.webm?mirrorlist)
+      [this](https://cdn.media.freifunk.net/d97d0ab8-90f9-42bb-bbb9-972afad2a122/18-hd.webm?mirrorstats).
 
   %h2#apps Apps
 
   %ul
     %li
       :markdown
-        [Kodi addon](https://kodi.tv/addon/plugins-video-add-ons/mediacccde)
-    %li
-      :markdown
-        [Plex plugin](https://github.com/cccc/MediaCCC.bundle) (not released yet)
-    %li
-      :markdown
-        [Android TV App](https://github.com/stefanmedack/cccTV). Runs on Android TV and Fire TV. Tablet support in progress.
-    %li
-      :markdown
-        [AppleTV app](https://github.com/ccc-ffm/CCC-TV). Not all talks available due to Apple Inc. a employee's interpretation of their [app store review guidelines](https://developer.apple.com/app-store/review/guidelines/)
-    %li
-      :markdown
-        [youtube-dl](https://github.com/rg3/youtube-dl) [module](https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/ccc.py)
+        [youtube-dl](https://github.com/rg3/youtube-dl)
 
   %h2 Bug reports and feature requests
   %p
     Please use the
-    %a{href: 'https://github.com/voc/voctoweb/issues'} issue tracker
+    %a{href: 'https://github.com/freifunk/voctoweb/issues'} issue tracker
     on github to let us know about errors
-    %a{href: '//media.ccc.de'} media.ccc.de
+    %a{href: '//media.freifunk.net'} media.ccc.de
     \. The latest source code version of this platform is also hosted on
-    %a{href: 'https://github.com/voc/voctoweb'} github
+    %a{href: 'https://github.com/freifunk/voctoweb'} github
     and ready to expect your pull-requests.
 
   %h2 Imprint
 
   %p
     :markdown
-      Please see [ccc.de](//ccc.de/de/imprint).
+      Please see [freifunk.net](https://freifunk.net/webteam).
 
   %script#status-template{type: 'text/x-handlebars-template'}
     <table class="table table-striped table-condensed">
