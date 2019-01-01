@@ -55,3 +55,6 @@ config/settings.yml
 
 # vim
 *.swp
+
+# letsenceypt
+public/.well-known
