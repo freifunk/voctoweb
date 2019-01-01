@@ -4,8 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '~> 5.1.0'
 gem 'dotenv-rails'
 
-gem 'activeadmin', '~> 1.0.0.pre'
-gem 'inherited_resources', github: 'activeadmin/inherited_resources'
+gem 'activeadmin'
 
 gem 'tinymce-rails'
 gem 'devise'

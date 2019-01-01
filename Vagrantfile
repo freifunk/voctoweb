@@ -1,13 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-required_plugins = %w( vagrant-hostsupdater )
-required_plugins.each do |plugin|
-  unless Vagrant.has_plugin? plugin
-    raise "vagrant plugin '#{plugin}' is missing, install with 'vagrant plugin install #{plugin}'"
-  end
-end
-
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -35,7 +28,6 @@ Vagrant.configure(2) do |config|
   # using a specific IP.
   config.vm.network "private_network", ip: "192.168.23.42"
   config.vm.hostname = "media.ccc.vm"
-  config.hostsupdater.remove_on_suspend = true
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -76,7 +68,7 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    echo "nameserver 213.73.91.35" | tee /etc/resolv.conf
+    echo "nameserver 9.9.9.9" | tee /etc/resolv.conf
     export DEBIAN_FRONTEND="noninteractive"
     apt-get update
     apt-get install -y redis-server elasticsearch ruby2.3 ruby2.3-dev postgresql-9.5 nodejs libssl-dev build-essential libpq-dev libsqlite3-dev nginx

@@ -6,6 +6,21 @@ module Frontend
       respond_to { |format| format.html }
     end
 
+    def playlist_related
+      @playlist = Playlist.related(@event)
+      respond_to { |format| format.html { render :playlist } }
+    end
+
+    def playlist_conference
+      @playlist = Playlist.for_conference(@conference, lead_event: @event)
+      respond_to { |format| format.html { render :playlist } }
+    end
+
+    def audio_playlist_conference
+      @playlist = Playlist.for_conference(@conference, lead_event: @event, audio: true)
+      respond_to { |format| format.html { render :playlist } }
+    end
+
     def postroll
       @events = related_events(3)
       render layout: false
@@ -29,11 +44,6 @@ module Frontend
     def load_event
       @event = Frontend::Event.find_by!(slug: params[:slug])
       @conference = @event.conference
-      @player = ''
-      if params[:player]
-        # TODO input sanitation/validation?
-        @player = '_' + params[:player]
-      end
     end
   end
 end

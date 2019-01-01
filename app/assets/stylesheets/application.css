@@ -13,6 +13,8 @@
  *= require icomoon-font
  *= require jquery.bxslider
  *= require mediaelementplayer
+ *= require timelens
+ *= require timelens-custom
 
  *= require source-chooser/source-chooser
  *= require speed/speed
@@ -21,4 +23,5 @@
  *= require jump-forward/jump-forward
  *= require chromecast/chromecast
  *= require airplay/airplay
+ *= require playlist/playlist
 */

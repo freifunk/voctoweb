@@ -16,10 +16,14 @@
 //= require bootstrap-sprockets
 //= require turbolinks
 
+//= require purl.min
+//= require handlebars.min-latest
+//= require jquery.bxslider-v4.2.12-patched
+//= require slider
+//= require feed_toggle
+
 //= require mirrorbrain-fix
 //= require mediaelement-and-player
-// //= require mediaelement-fix
-
 //= require source-chooser/source-chooser
 //= require speed/speed
 //= require postroll/postroll
@@ -27,9 +31,12 @@
 //= require jump-forward/jump-forward
 //= require chromecast/chromecast
 //= require airplay/airplay
+//= require playlist/playlist
+//
+//= require clappr.min
+//= require clappr-thumbnails-plugin
+//= require clappr-playback-rate-plugin
+//= require relive-seek
 
-//= require purl.min
-//= require handlebars.min-latest
-//= require jquery.bxslider
-//= require slider
-//= require feed_toggle
+//= require timelens
+//= require activate-timelens

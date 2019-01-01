@@ -20,7 +20,9 @@
 /Gemfile.lock.tags
 *.patch
 vendor/gems/
-/sbin
+docker/content
+docker/db
+docker/ssh
 
 # Ignore assets
 public/assets

@@ -60,20 +60,10 @@ class Api::EventsControllerTest < ActionController::TestCase
 
   test 'should create event' do
     create :conference_with_recordings
-    args = {
-      guid: 'qwerty',
-      poster_url: 'http://koeln.ccc.de/images/chaosknoten_preview.jpg',
-      thumb_url: 'http://koeln.ccc.de/images/chaosknoten.jpg',
-      original_language: 'eng-deu',
-      slug: 'best_event',
-      title: 'Event?',
-      subtitle: 'abcd',
-      description: 'defgh',
-      persons: %w(p q r),
-      tags: %w(t u v)
-    }
+    args = event_args
     assert_difference('Event.count') do
-      post 'create', format: :json, params: { api_key: @key.key,
+      post 'create', format: :json, params: {
+        api_key: @key.key,
         acronym: Conference.last.acronym,
         event: args
       }
@@ -86,5 +76,54 @@ class Api::EventsControllerTest < ActionController::TestCase
     assert_equal 'Event?', event.title
     assert_equal %w(p q r), event.persons
     assert_equal %w(t u v), event.tags
+  end
+
+  test 'when event create fails it should return json errors' do
+    create :conference_with_recordings
+    args = event_args
+    args.delete(:slug)
+
+    assert_no_difference('Event.count') do
+      post 'create', format: :json, params: {
+        api_key: @key.key,
+        acronym: Conference.last.acronym,
+        event: args
+      }
+    end
+    msg = JSON.parse(response.body)
+    assert_equal ['slug'], msg.keys
+    assert_equal ["can't be blank"], msg['slug']
+    assert_response 422
+
+    args = Conference.last.events.first.attributes
+    args.delete('guid')
+    assert_no_difference('Event.count') do
+      post 'create', format: :json, params: {
+        api_key: @key.key,
+        acronym: Conference.last.acronym,
+        event: args
+      }
+    end
+    assert_response 422
+    msg = JSON.parse(response.body)
+    assert_equal ['slug'], msg.keys
+    assert_equal ["has already been taken"], msg['slug']
+  end
+
+  def event_args
+    {
+      guid: 'qwerty',
+      poster_url: 'http://koeln.ccc.de/images/chaosknoten_preview.jpg',
+      thumb_url: 'http://koeln.ccc.de/images/chaosknoten.jpg',
+      timeline_url: 'http://koeln.ccc.de/images/chaosknoten.timeline.jpg',
+      thumbnails_url: 'http://koeln.ccc.de/images/chaosknoten.thumbnails.vtt',
+      original_language: 'eng-deu',
+      slug: 'best_event',
+      title: 'Event?',
+      subtitle: 'abcd',
+      description: 'defgh',
+      persons: %w(p q r),
+      tags: %w(t u v)
+    }
   end
 end

@@ -9,7 +9,7 @@ module Frontend
     def recording_title(recording)
       if recording.slides?
         "slides #{recording.language} #{recording.height}p"
-      else 
+      else
         "#{recording.language} #{recording.height}p"
       end
     end
@@ -28,10 +28,6 @@ module Frontend
 
     def googleplus_url(title, url)
       'https://plus.google.com/share?title='.freeze + URI.encode_www_form_component(title) + '&url=' + URI.encode_www_form_component(url)
-    end
-
-    def appnet_url(title, url)
-      'https://alpha.app.net/intent/post?text='.freeze + URI.encode_www_form_component(title + ': ' + url)
     end
 
     def diaspora_url(title, url)
@@ -54,8 +50,11 @@ module Frontend
              end
       parts = path.split('/')
       return if parts.blank?
-      #TODO -> use title instead of 'event'
-      parts += ['event'] if @event
+      if @playlist
+        parts += ['playlist']
+      elsif @event
+        parts += ['event']
+      end
       current = parts.pop
       yield parts.map!(&:freeze), current.freeze
     end
@@ -125,6 +124,30 @@ module Frontend
       return 'event and release date' if event.released_on_event_day?
       return 'event date' if event.date
       'video release date'
+    end
+
+    def relive_data(event, width, height)
+      data = { width: width, height: height, m3u8: event.relive['playlist'] }
+      return data unless event.relive['sprites']
+
+      data.merge!(
+        sprites: event.relive['sprites']['url'],
+        'sprites-n': event.relive['sprites']['n'],
+        'sprites-cols': event.relive['sprites']['cols'],
+        'sprites-interval': event.relive['sprites']['interval']
+      )
+    end
+
+    def video_player_ivars(args={})
+      {
+        height: aspect_ratio_height,
+        width: aspect_ratio_width,
+        event: @event
+      }.merge(args)
+    end
+
+    def stretching
+      'responsive'
     end
   end
 end

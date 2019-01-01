@@ -31,11 +31,16 @@ class Event < ApplicationRecord
 
   has_attached_file :poster, via: :poster_filename, belongs_into: :images, on: :conference
 
+  has_attached_file :timeline, via: :timeline_filename, belongs_into: :images, on: :conference
+
+  has_attached_file :thumbnails, via: :thumbnails_filename, belongs_into: :images, on: :conference
+
   after_initialize :generate_guid
   before_save { trim_paths }
   after_save { conference.update_last_released_at_column if saved_change_to_release_date? }
   after_save { update_conference_downloaded_count if saved_change_to_conference_id? }
   after_save { conference.touch unless saved_change_to_view_count? }
+  after_touch { conference.touch }
   after_destroy { |record| delete_related_from_other_events(record.id.to_s) }
   after_destroy { conference.update_last_released_at_column }
   after_destroy { conference.touch }
@@ -103,9 +108,11 @@ class Event < ApplicationRecord
     recordings.maximum(:length) || 0
   end
 
-  def set_image_filenames(thumb_url, poster_url)
+  def set_image_filenames(thumb_url, poster_url, timeline_url, thumbnails_url)
     self.thumb_filename = get_image_filename thumb_url if thumb_url
     self.poster_filename = get_image_filename poster_url if poster_url
+    self.timeline_filename = get_image_filename timeline_url if timeline_url
+    self.thumbnails_filename = get_image_filename thumbnails_url if thumbnails_url
   end
 
   def display_name
@@ -180,6 +187,8 @@ class Event < ApplicationRecord
   def trim_paths
     thumb_filename.strip! unless thumb_filename.blank?
     poster_filename.strip! unless poster_filename.blank?
+    timeline_filename.strip! unless timeline_filename.blank?
+    thumbnails_filename.strip! unless thumbnails_filename.blank?
     link.strip! unless link.blank?
   end
 

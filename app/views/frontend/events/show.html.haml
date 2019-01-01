@@ -17,7 +17,7 @@
 - if current_admin_user
   - content_for :navbar do
     .nav.navbar-form.navbar-right.button-wrapper
-      %a.form-control.btn.btn-default{href: edit_admin_event_path(@event)}
+      %a.form-control.btn.btn-default{href: edit_admin_event_path(@event), data: { turbolinks: false  }}
         %span.icon.icon-edit
 
 - content_for :description do
@@ -25,22 +25,46 @@
 
 - cache([@event.conference, @event]) do
   .container-fluid
-    %h1
-      = @event.title
-    - unless @event.subtitle.nil? || @event.subtitle.empty?
-      %h2
-        = @event.subtitle
+    .player-header
+      .conference
+        - if @conference&.logo_url
+          %a.thumbnail.conference{href: conference_path(acronym: @conference.acronym)}
+            %img{src: @conference.logo_url, alt: 'conference logo'}
+            - if @conference.logo_does_not_contain_title
+              .caption
+                = @conference.title
+        - else 
+          =@conference.title
+      %h1
+        = @event.title
+      - unless @event.subtitle.blank?
+        %h2
+          = @event.subtitle
 
     %p.persons
       = render partial: 'frontend/shared/event_persons', locals: { persons: @event.persons }
-      - if @event.recordings.video.present?
-        .player.video
-          .kiosk
-          = render partial: 'frontend/shared/player_video', locals: { height: aspect_ratio_height, width: aspect_ratio_width, stretching: 'responsive', event: @event }
 
-      - elsif @event.recordings.audio.present?
-        .player.audio
-          = render partial: 'frontend/shared/player_audio', locals: { event: @event }
+    - if @event.recordings.video.present?
+      .player.video
+        .kiosk
+        = render partial: 'frontend/shared/player_video', locals: video_player_ivars
+
+      Playlists:
+      = link_to "'#{@conference.acronym}' videos starting here", playlist_conference_path(slug: @event.slug)
+      - if @conference.audio_recordings?
+        \/
+        = link_to 'audio', audio_playlist_conference_path(slug: @event.slug), method: :get
+      - if @event.metadata['related'].present?
+        \/
+        = link_to 'related events', playlist_related_path(slug: @event.slug)
+
+    - elsif @event.relive_present?
+      .player.video
+        .kiosk
+        = render partial: 'frontend/shared/player_relive', locals: video_player_ivars
+
+    - else
+      No content found (yet?).
 
     %ul.metadata
       %li
@@ -67,13 +91,13 @@
       %p.description
         = simple_format @event.description
 
-    - if @event.metadata['related'].present?
-      %h3 Related
-      = render partial: 'frontend/shared/related', locals: { events: Frontend::Event.find(@event.related_event_ids(10)) }
-
     %h3 Download
     .download
       = render partial: 'frontend/shared/download', locals: { conference: @conference, event: @event }
+
+    - if @event.metadata['related'].present?
+      %h3 Related
+      = render partial: 'frontend/shared/related', locals: { events: Frontend::Event.find(@event.related_event_ids(10)) }
 
     /%h3 Embed/Share
     .share
