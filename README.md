@@ -14,11 +14,11 @@ media.ccc.de webfrontend, meta data editor and API.
 The public API provides a programatic access to the data behind media.ccc.de. Consumers of this API are typically player apps for different eco systems, see https://media.ccc.de/about.html#apps for a 'full' list. The whole API is "discoverable" starting from https://api.media.ccc.de/public/conferences ; Available methods:
 
     /public/conferences
-    /public/conferences/:id
     /public/conferences/:acronym
+    /public/conferences/:id
     /public/events
-    /public/events/:id
     /public/events/:guid
+    /public/events/:id
     /public/events/search?q=:term
     /public/recordings
     /public/recordings/:id
@@ -37,38 +37,62 @@ Additionally the API for events and recordings uses RFC-5988 HTTP header based p
 
 ### Private REST API
 
-The private API is used by our (video) production teams. They manage the content by adding new conferences, events and other files (so called recordings). All API calls need to use the JSON format. An example API client can be found as part of our publishing-script repository: https://github.com/voc/publishing/
+The private API is used by our (video) production teams. They manage the content by adding new conferences, events and other files (so called recordings). All API calls need to use the JSON format. An example API client can be found as part of our publishing-script repository: https://github.com/voc/publishing/ . The `api_key` has to be added as query variable, or in the JSON request body.
 
 Most REST operations work as expected. Examples for resource creation are listed on the applications dashboard page.
+
+#### Create conference
 
 You can use the API to register a new conference. The conference `acronym` and the URL of the `schedule.xml` are required.
 However folders and access rights need to be setup manually, before you can upload images and videos.
 
     curl -H "CONTENT-TYPE: application/json" -d '{
-        "api_key":"4","acronym":"frab123",
+        "api_key":"4",
+        "acronym":"frab123",
         "conference":{
           "recordings_path":"conference/frab123",
           "images_path":"events/frab",
           "slug":"event/frab/frab123",
           "aspect_ratio":"16:9",
           "title":null,
-          "schedule_url":"http://progam/schedule.xml"
+          "schedule_url":"http://progam.tld/schedule.xml"
         }
       }' "http://localhost:3000/api/conferences"
 
-You can add images to an event, like the poster image. The event is identified by its `guid` and the conference `acronym`.
+
+#### Create event
+
+
+To add event (e.g. a talk or lecture) the conference it is part of via `acronym`, and define generate a random `guid`. You can add images to an event, like the poster image.  For an explanation what the `timeline_url` and `thumbnails_url` parameters are, see <https://timelens.io>.
 
     curl -H "CONTENT-TYPE: application/json" -d '{
         "api_key":"4",
-        "acronym":"frab123",
-        "poster_url":"http://koeln.ccc.de/images/chaosknoten_preview.jpg",
-        "thumb_url":"http://koeln.ccc.de/images/chaosknoten.jpg",
+        "acronym": "frab123"
         "event":{
-          "guid":"123",
-          "slug":"123",
-          "title":"qwerty"
+          "guid":"1c4d8ad8-e072-11e8-981a-6c400891b752",
+          "slug":"fra123-22-qwerty",
+          "title":"qwerty",
+          "poster_url":"http://koeln.ccc.de/images/chaosknoten_preview.jpg",
+          "thumb_url":"http://koeln.ccc.de/images/chaosknoten.jpg",
+          "timeline_url":"http://koeln.ccc.de/images/chaosknoten.timeline.jpg",
+          "thumbnails_url":"http://koeln.ccc.de/images/chaosknoten.thumbnails.vtt",
         }
       }' "http://localhost:3000/api/events"
+
+
+
+#### Update event
+
+    curl  -i -X PATCH -H "CONTENT-TYPE: application/json" -d '{
+        "api_key":"XXX",
+        "event":{
+          "tags": ["foo", "bar", "baz", "2018"]
+        }
+      }' "http://localhost:3000/api/events/1c4d8ad8-e072-11e8-981a-6c400891b752"
+
+
+
+#### Create recording
 
 Recordings are added by specifiying the parent events `guid`, an URL and a `filename`.
 The recording length is specified in seconds.
@@ -93,6 +117,8 @@ curl -H "CONTENT-TYPE: application/json" -d '{
   }' "http://localhost:3000/api/recordings"
 ```
 
+#### Misc
+
 Create news items
 
     /api/news
@@ -106,23 +132,23 @@ Update view counts of events viewed in the last 30 minutes
     /api/events/update_view_counts
 
 
-#### Setup Development-Server
-```
-# for ubuntu and debian one might want to install vagrant from upstream
-# (https://www.vagrantup.com/downloads.html), because of a packaging bug:
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=818237
-$ sudo apt-get install vagrant virtualbox
+## Set up development environment
 
-$ vagrant plugin install vagrant-hostsupdater
-$ vagrant up
-$ vagrant ssh -c 'cd /vagrant && ./bin/update-data'
+A convenient way to set up an environment for developing voctoweb is [Docker](https://www.docker.com).
 
-http://media.ccc.vm:3000/ <- Frontend
-http://media.ccc.vm:3000/admin/ <- Backend
-Backend-Login:
-  Username: admin@example.org
-  Password: media123
+First, install Docker and [Docker Compose](https://docs.docker.com/compose/) – you will probably find them in your distribution's package manager.
+
+Then, clone this repository, make it your working directory, and run the following command:
+
 ```
+bin/docker-dev-up
+```
+
+You can now reach the voctoweb frontend at `http://localhost.c3voc.de/`. The backend is at `http://localhost.c3voc.de/admin`, with the default username `admin@example.org` and the password `media123`. You can stop the running containers using *Ctrl-C*. To start them again, just run `docker-compose up`.
+
+The whole application directory is mounted into the containers, so all changes you make to the files are reflected inside the application automatically. To run commands inside the voctoweb container, run `docker-compose run voctoweb $COMMAND`. If you ever need to rebuild the containers (because of new dependencies, for example), run the `docker-compose build` command again.
+
+Image and video files in `docker/content` are tried first, if missing live data from media.ccc.de is used.
 
 ## Install for Production
 
@@ -147,7 +173,7 @@ sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libread
 libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev \
 python-software-properties libffi-dev libgdbm-dev libncurses5-dev automake libtool bison
 
-# install deps for media.ccc.de
+# install deps for voctoweb
 sudo apt-get install redis-server libpqxx-dev
 
 # install node.js
@@ -169,7 +195,7 @@ gem install bundler
 
 # postgresql setup
 sudo -u postgres -i
-createuser -d -P media
+createuser -d -P voctoweb
 
 # obtaining & setting up a voctoweb instance
 git clone git@github.com:voc/voctoweb.git

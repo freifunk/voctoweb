@@ -1,0 +1,44 @@
+- content_for :title do
+  Playlist for
+  = %("#{@playlist.title}")
+
+- content_for :body_class do
+  page-show
+
+- content_for :head do
+  - if @playlist.conference
+    = render partial: 'frontend/shared/folder_feeds', locals: { conference: @playlist.conference }
+
+- cache([@playlist.playlist]) do
+  .container-fluid
+    .player-header
+      - if @conference&.logo_url
+        %a.thumbnail.conference{href: conference_path(acronym: @conference.acronym)}
+          %img{src: @conference.logo_url, alt: 'conference logo'}
+          - if @conference.logo_does_not_contain_title
+            .caption
+              = @conference.title
+      - else 
+        =@conference.title
+
+      %h1
+        Playlist
+        = %("#{@playlist.title}")
+
+    - if @playlist.audio?
+      .player.audio
+        = render partial: 'frontend/shared/player_playlist_audio', locals: { playlist: @playlist }
+
+    - else
+      .player.video
+        .kiosk
+        = render partial: 'frontend/shared/player_playlist_video', locals: video_player_ivars(playlist: @playlist)
+
+    %h2.event_title
+      = @playlist.lead_event.title
+  
+    %p.persons
+      = render partial: 'frontend/shared/event_persons', locals: { persons: @playlist.lead_event.persons }
+      
+    %p
+      = simple_format(@playlist.lead_event.description, class: :description)

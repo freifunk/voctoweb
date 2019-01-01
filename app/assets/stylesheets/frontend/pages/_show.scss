@@ -9,6 +9,24 @@ body.page-show {
     margin-top: 10px;
   }
 
+  .player-header {
+    clear: both;
+
+    .thumbnail {
+      float: right;
+      img {
+        max-height: 90px;
+        max-width: 300px;
+      } 
+      margin-left: $padding-small-horizontal;
+      margin-top: -$padding-large-horizontal;
+    }
+  }
+
+  .player {
+    clear: both;
+  }
+
   .metadata {
     list-style: none;
     padding: $padding-small-vertical 0;

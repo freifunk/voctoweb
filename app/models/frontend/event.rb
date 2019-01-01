@@ -48,6 +48,14 @@ module Frontend
       end
     end
 
+    def timeline_url
+      File.join(Settings.static_url, conference.images_path, timeline_filename).freeze if timeline_filename
+    end
+
+    def thumbnails_url
+      File.join(Settings.static_url, conference.images_path, thumbnails_filename).freeze if thumbnails_filename
+    end
+
     def tags
       self[:tags].compact.collect(&:to_s).collect(&:strip).map!(&:freeze)
     end
@@ -121,14 +129,33 @@ module Frontend
     end
 
     def related_event_ids(n)
+      return conference.events.ids unless metadata.key?('related')
       metadata['related'].keys.shuffle[0..n-1]
     end
 
     def next_from_conference(n)
-      events = conference.events.order(:date).to_a
+      events = conference.events.to_a
       pos = events.index(self) + 1
       pos = 0 if pos >= events.count
       events[pos..pos+n-1]
+    end
+
+    def playlist
+      related_ids = related_event_ids(20)
+      [self] + Event.where(id: related_ids).includes(:conference).to_a
+    end
+
+    def relive_present?
+      return unless conference.metadata['relive'].present?
+      conference.metadata['relive'].any? { |r| r['guid'] == guid }
+    end
+
+    def relive
+      conference.metadata['relive']&.find { |r| r['guid'] == guid }
+    end
+
+    def timelens_present?
+        timeline_filename.present? and thumbnails_filename.present?
     end
 
     private
