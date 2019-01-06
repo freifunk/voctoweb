@@ -1,10 +1,11 @@
 @mixin video-player-size($w) {
   $h: $w / 16 * 9;
+  $h_43: $w / 4 * 3;
 
   @media all and (min-width: $w+40px) { // +40 -> add 20px space on the left and right side video player
     .video.player {
       width: $w !important;
-      .mejs__container.video {
+      .mejs__container.video, >video, div[data-player] {
         margin-left: -(($w - ($max-width - 30))/2)  !important;
 
         &.mejs__container-fullscreen {
@@ -22,6 +23,16 @@
       background: #000;
       padding-top: $h;
     }
+
+    .video.player, div[data-player] {
+      max-height: $h !important;
+    }
+    .video.player[data-aspect-ratio='4:3'] {
+      max-height: $h_43 !important;
+      .kiosk {
+        padding-top: $h_43;
+      }
+    }
   }
 }
 
@@ -30,6 +41,14 @@
 @include video-player-size(1280px);
 @include video-player-size(1920px);
 
+.video.player, div[data-player] {
+  height: 54.5vw;
+  max-height: 576px;
+}
+.video.player[data-aspect-ratio='4:3'] {
+  height: 72vw;
+  max-height: 730px;
+}
 
 /* from https://css-tricks.com/rundown-of-handling-flexible-media/#article-header-id-5 */
 /*
@@ -69,6 +88,9 @@
 }
 .postroll .video-thumbnail {
   width: 80%;
+}
+.postroll .row {
+  padding-bottom: 1.5em;
 }
 
 @media all and (min-width: 550px) {

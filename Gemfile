@@ -20,6 +20,9 @@ gem 'exception_notification'
 gem 'puma'
 gem 'puma_worker_killer'
 
+# Simplified production logging
+gem 'lograge'
+
 group :development do
   gem 'bullet'
   gem 'capistrano', '~> 3.5.0', group: :capistrano, require: false
@@ -28,6 +31,8 @@ group :development do
   gem 'capistrano-bundler', require: false
   gem 'capistrano-sidekiq', require: false
   gem 'mqtt', :git => 'https://github.com/njh/ruby-mqtt.git'
+  gem 'ed25519',            require: false
+  gem 'bcrypt_pbkdf',       require: false
 end
 
 gem 'haml'
