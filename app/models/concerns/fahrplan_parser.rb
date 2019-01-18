@@ -19,7 +19,8 @@ module FahrplanParser
           date:        get_event_date(ev),
           subtitle:    ev.elements['subtitle'].text,
           slug:        ev.elements['slug'].text,
-          persons:     get_persons(ev)
+          persons:     get_persons(ev),
+	  link:	       ev.elements['url'].text
         }
       }
       @events

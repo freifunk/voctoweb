@@ -15,7 +15,8 @@ module FahrplanUpdater
     self.title = info.delete(:title)
     id = info.delete(:id)
     self.metadata[:remote_id] = id
-    self.link = get_event_url(id)
+    # use link from schedule xml
+    # self.link = get_event_url(id)
     update_attributes info
   end
 
