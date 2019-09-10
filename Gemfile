@@ -7,7 +7,7 @@ gem 'dotenv-rails'
 gem 'activeadmin'
 
 gem 'tinymce-rails'
-gem 'devise'
+gem 'devise', '>= 4.7.1'
 gem 'aasm'
 gem 'sidekiq'
 gem 'foreman'
