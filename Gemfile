@@ -17,8 +17,8 @@ gem 'redis-rails'
 gem 'exception_notification'
 
 # Bundle puma application server
-gem 'puma'
-gem 'puma_worker_killer'
+gem 'puma', '>= 3.12.2'
+gem 'puma_worker_killer', '>= 0.1.0'
 
 # Simplified production logging
 gem 'lograge'
