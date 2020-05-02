@@ -7,7 +7,7 @@
 
   &.live {
     @media #{$lg-or-bigger} {
-      height: 380px;
+      height: 420px;
     }
 
     h2 {
@@ -114,6 +114,7 @@
 
 .themed-banner {
   background-image: image-url('promoted_bg.jpg');
+  background-position: center; 
   .bx-wrapper .bx-viewport .bx-caption {
     font-size: 25px;
 
@@ -132,3 +133,10 @@
     }
   }
 }
+
+body.page-show .related .bx-wrapper .bx-controls .bx-pager { 
+  a:hover, a.active {
+    background: #00a356 !important;
+  }
+}
+

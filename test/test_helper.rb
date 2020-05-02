@@ -4,6 +4,7 @@ require 'rails/test_help'
 require 'minitest/pride'
 require 'sidekiq/testing'
 require 'tilt/redcarpet'
+require "rexml/document"
 
 Sidekiq::Logging.logger = nil
 
@@ -22,8 +23,11 @@ class ActiveSupport::TestCase
   end
 
   def post_json(action, json)
-    #post action, json, 'CONTENT_TYPE' => 'application/json'
     post action, headers: { 'CONTENT_TYPE' => 'application/json' }, params: json
+  end
+
+  def get_json(action, json)
+    get action, headers: { 'CONTENT_TYPE' => 'application/json' }, params: json
   end
 
   def create_test_file(target, source = 'audio.mp3')
@@ -31,5 +35,12 @@ class ActiveSupport::TestCase
     FileUtils.copy source, target
 
     File.join(Rails.root, target)
+  end
+
+  def xml_rss_items(xml)
+    doc = REXML::Document.new(xml)
+    items = []
+    doc.elements.each("/rss/channel/item") { |ev| items << ev }
+    items
   end
 end

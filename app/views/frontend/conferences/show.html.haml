@@ -9,6 +9,8 @@
     .logo
       %img{src: @conference.logo_url, alt: 'conference logo'}
     %h1= @conference.title or @conference.acronym.gsub(/[\-_]/,' ')
+    -if @tag
+      %h2= @tag
 
     - if @events.present?
       Full playlist:
@@ -17,12 +19,22 @@
         \/
         = link_to 'Audio', audio_playlist_conference_path(slug: @conference.first_slug), method: :get
 
+    - if @conference.description.present?
+      %br{ clear: 'all' }
+      %br
+      .description
+        = @conference.description.html_safe
+
+    - if @conference.link.present?
+      .link
+        %a{ href: @conference.link }= @conference.link
+
     #sorting.btn-group.btn-group-sm.btn-group-justified
       - %w{name duration date view_count}.each do |sorting|
         - if @sorting == sorting
-          %a.btn.btn-primary.active{ href: conference_path(acronym: @conference.acronym, sort: sorting) }= sorting.gsub(/_/, ' ')
+          %a.btn.btn-primary.active{ href: conference_path(acronym: @conference.acronym, tag: @tag, sort: sorting) }= sorting.gsub(/_/, ' ')
         - else
-          %a.btn.btn-primary{ href: conference_path(acronym: @conference.acronym, sort: sorting) }= sorting.gsub(/_/, ' ')
+          %a.btn.btn-primary{ href: conference_path(acronym: @conference.acronym, tag: @tag, sort: sorting) }= sorting.gsub(/_/, ' ')
 
   - if @events.present?
     .event-previews

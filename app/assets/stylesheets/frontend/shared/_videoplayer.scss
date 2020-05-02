@@ -5,13 +5,17 @@
   @media all and (min-width: $w+40px) { // +40 -> add 20px space on the left and right side video player
     .video.player {
       width: $w !important;
-      .mejs__container.video, >video, div[data-player] {
+      .mejs__container.video, >video, div[data-player], .video-native {
         margin-left: -(($w - ($max-width - 30))/2)  !important;
 
         &.mejs__container-fullscreen {
           margin-left: 0 !important;
         }
       }
+    }
+    .video-native {
+      width: 100% !important;
+      height: auto !important;
     }
 
     .kiosk {
@@ -73,33 +77,3 @@
   }
 }
 */
-.mejs__captions-layer  {
-  width: 100% !important;
-  line-height: 1.4em;
-  font-size: 2em;
-}
-
-
-.postroll {
-  width: 100% !important;
-  height: 100% !important;
-  padding: 1%;
-  color: #fff;
-}
-.postroll .video-thumbnail {
-  width: 80%;
-}
-.postroll .row {
-  padding-bottom: 1.5em;
-}
-
-@media all and (min-width: 550px) {
-  .postroll h4 {
-    height: 30%;
-  }
-}
-@media all and (max-width: 550px) {
-  .postroll h4 {
-    height: 10%;
-  }
-}

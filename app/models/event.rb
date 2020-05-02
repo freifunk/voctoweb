@@ -11,21 +11,29 @@ class Event < ApplicationRecord
     where(html5: true, mime_type: MimeType::VIDEO)
   }, class_name: 'Recording'
 
-  validates :conference, :release_date, :slug, :title, :guid, :original_language, presence: true
+  validates :conference, :slug, :title, :guid, :original_language, presence: true
+  validates :slug, format: { with: %r{\A[^/]+\z} }
   validates :guid, :slug, uniqueness: true
+  validates :doi, format: { with: %r{\A\b(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?!["&\'<>])\S)+)\z}, message: 'doi format not valid' }, allow_blank: true
   validate :original_language_valid
+
+  before_validation :strip_prefix, :only => [:doi]
 
   serialize :persons, Array
   serialize :tags, Array
 
-  # events with recordings of any type for a given conference
+  # get all Events of a Conference with at least one Recording
   scope :recorded_at, ->(conference) {
-    joins(:recordings, :conference)
-      .where(conferences: { id: conference })
-      .where(recordings: { mime_type: MimeType.all })
-      .group(:id)
+    # reuse conference so using event.conference does not trigger a query
+    conference
+      .events
+      .includes(:recordings)
+      .where.not(recordings: { id: nil })
   }
-  scope :recent, ->(n) { order('release_date desc').limit(n) }
+  scope :released, -> { where('release_date IS NOT NULL').order('release_date desc') }
+  scope :newer, ->(date) { released.where('release_date > ?', date) }
+  scope :older, ->(date) { released.where('release_date < ?', date) }
+  scope :recent, ->(n) { released.limit(n) }
 
   has_attached_file :thumb, via: :thumb_filename, belongs_into: :images, on: :conference
 
@@ -40,6 +48,7 @@ class Event < ApplicationRecord
   after_save { conference.update_last_released_at_column if saved_change_to_release_date? }
   after_save { update_conference_downloaded_count if saved_change_to_conference_id? }
   after_save { conference.touch unless saved_change_to_view_count? }
+  after_save { update_feeds unless saved_change_to_view_count? }
   after_touch { conference.touch }
   after_destroy { |record| delete_related_from_other_events(record.id.to_s) }
   after_destroy { conference.update_last_released_at_column }
@@ -134,9 +143,46 @@ class Event < ApplicationRecord
     end
   end
 
+  def related_events
+    unless metadata['related'].nil?
+      ids = metadata['related'].keys
+      Event.find(ids)
+    end
+  end
+
   # for elastic search
   def remote_id
     metadata['remote_id']
+  end
+
+  # used by player and graphql
+  def videos_sorted_by_language
+    self.recordings.video.sort_by { |x| (x.language == self.original_language ? 0 : 2) + (x.html5 ? 0 : 1) }
+  end
+  
+
+  def doi_url
+    if doi
+      "https://doi.org/#{doi}"
+    end
+  end
+
+  def update_feeds
+    return unless release_date
+
+    # also update these daily
+    if release_date > WebFeed.last_year
+      Feed::PodcastWorker.perform_async
+      Feed::LegacyWorker.perform_async
+      Feed::AudioWorker.perform_async
+    elsif release_date < WebFeed.last_year
+      Feed::ArchiveWorker.perform_async
+      Feed::ArchiveLegacyWorker.perform_async
+    end
+
+    # these don't need to be re-created periodically
+    Feed::FolderWorker.perform_async conference.id
+    Feed::RecentWorker.perform_async
   end
 
   private
@@ -190,6 +236,10 @@ class Event < ApplicationRecord
     timeline_filename.strip! unless timeline_filename.blank?
     thumbnails_filename.strip! unless thumbnails_filename.blank?
     link.strip! unless link.blank?
+  end
+
+  def strip_prefix
+    self.doi = doi.sub(/^https?:\/\/doi\.org\//, '') unless doi.nil?
   end
 
   def delete_related_from_other_events(id)

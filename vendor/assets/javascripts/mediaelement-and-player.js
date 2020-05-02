@@ -3499,11 +3499,13 @@ var config = exports.config = {
 	defaultAudioHeight: 40,
 
 	defaultSeekBackwardInterval: function defaultSeekBackwardInterval(media) {
-		return media.getDuration() * 0.05;
+		//return media.getDuration() * 0.05;
+		return 15;
 	},
 
 	defaultSeekForwardInterval: function defaultSeekForwardInterval(media) {
-		return media.getDuration() * 0.05;
+		//return media.getDuration() * 0.05;
+		return 30;
 	},
 
 	setDimensions: true,
@@ -3567,13 +3569,10 @@ var config = exports.config = {
 	keyActions: [{
 		keys: [32, 179],
 		action: function action(player) {
-
-			if (!_constants.IS_FIREFOX) {
-				if (player.paused || player.ended) {
-					player.play();
-				} else {
-					player.pause();
-				}
+			if (player.paused || player.ended) {
+				player.play();
+			} else {
+				player.pause();
 			}
 		}
 	}]
@@ -4853,6 +4852,10 @@ var MediaElementPlayer = function () {
 			});
 
 			media.addEventListener('playing', function () {
+				poster.style.display = 'none';
+			});
+
+			media.addEventListener('seeked', function () {
 				poster.style.display = 'none';
 			});
 

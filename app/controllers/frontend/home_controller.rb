@@ -1,7 +1,7 @@
 module Frontend
   class HomeController < FrontendController
     helper_method :recent_events_for_conference
-    CONFERENCE_LIMIT = 3
+    CONFERENCE_LIMIT = 9
     EVENT_LIMIT = 3
 
     def index
@@ -12,6 +12,8 @@ module Frontend
       @conferences_count = Frontend::Conference.count
 
       @recent_conferences = Frontend::Conference.with_recent_events(CONFERENCE_LIMIT)
+
+      @currently_streaming = Frontend::Conference.currently_streaming
 
       respond_to { |format| format.html }
     end
@@ -27,7 +29,7 @@ module Frontend
     private
 
     def recent_events_for_conference(conference)
-      conference.events.includes(:conference).limit(EVENT_LIMIT)
+      conference.events.released.includes(:conference).limit(EVENT_LIMIT)
     end
   end
 end

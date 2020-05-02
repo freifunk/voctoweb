@@ -29,6 +29,7 @@
     top: 0;
     z-index: -1;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.2s, z-index 0.2s;
     transform: translateY(-100%) translateY(-7px);
 }
@@ -95,6 +96,55 @@
 .timelens .mejs__time-handle,
 .timelens .mejs__time-float {
     display: none !important;
+}
+
+@media only screen and (max-width: 500px) {
+    body:not(.page-show-playlist) .player.video {
+        margin-bottom: 40px;
+    }
+
+    body:not(.page-show-playlist)
+        .mejs__container.mejs__container:not(.mejs__container-fullscreen) {
+        overflow: visible;
+    }
+
+    body:not(.page-show-playlist)
+        .mejs__container:not(.mejs__container-fullscreen)
+        .mejs__layers {
+        overflow: hidden;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    body:not(.page-show-playlist)
+        .mejs__container:not(.mejs__container-fullscreen)
+        .mejs__time-rail {
+        position: static;
+    }
+
+    body:not(.page-show-playlist)
+        .mejs__container:not(.mejs__container-fullscreen)
+        .timelens {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        right: 102px;
+        width: auto;
+        box-shadow: 0 0 0 2px #eee;
+    }
+
+    body:not(.page-show-playlist)
+        .mejs__container:not(.mejs__container-fullscreen)
+        .mejs__time {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: calc(100px - 6px - 6px);
+        background-color: #000;
+    }
 }
 
 /* Clappr */

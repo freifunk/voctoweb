@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.5
 
 # loading order actually matters
 Bundler/OrderedGems:
@@ -11,7 +11,7 @@ Style/HashSyntax:
 
 # never break line due to length, except in data
 # vim: set wrap
-Metrics/LineLength:
+Layout/LineLength:
   Max: 1024
 
 # use and/or for flow control, but not in boolean assignments
@@ -47,7 +47,7 @@ Style/CommentAnnotation:
   Enabled: false
 
 # Vim prefers fixed indent, avoid manual vertical alignment
-Style/AlignParameters:
+Layout/ParameterAlignment:
   Enabled: true
   EnforcedStyle: with_fixed_indentation
 
@@ -63,5 +63,5 @@ Metrics/AbcSize:
 Style/Documentation:
   Enabled: false
 
-Style/AlignHash:
+Layout/HashAlignment:
   Enabled: false

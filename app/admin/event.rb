@@ -13,55 +13,63 @@ ActiveAdmin.register Event do
   index do
     selectable_column
     column :guid
-    column :title
-    column :thumb_filename do |event|
-      line_break_filename event.thumb_filename
-    end
-    column :poster_filename do |event|
-      line_break_filename event.poster_filename
-    end
-    column :timeline_filename do |event|
-      line_break_filename event.timeline_filename
-    end
-    column :thumbnails_filename do |event|
-      line_break_filename event.thumbnails_filename
-    end
-    column :original_language
     column :conference
-    column :promoted
+    column :title
+    column :persons_raw
+    #column :thumb_filename do |event|
+    #  line_break_filename event.thumb_filename
+    #end
+    #column :poster_filename do |event|
+    #  line_break_filename event.poster_filename
+    #end
+    #column :timeline_filename do |event|
+    #  line_break_filename event.timeline_filename
+    #end
+    #column :thumbnails_filename do |event|
+    #  line_break_filename event.thumbnails_filename
+    #end
+    #column :original_language
     column :created_at do |event|
       l(event.created_at, format: :pretty_datetime)
     end
+    column :promoted
     actions
   end
 
   show do |e|
     attributes_table do
       row :guid
-      row :title
-      row :thumb_filename do
-        div show_event_folder e, :thumb_filename
-      end
-      row :poster_filename do
-        div show_event_folder e, :poster_filename
-      end
-      row :timeline_filename do
-        div show_event_folder e, :timeline_filename
-      end
-      row :thumbnails_filename do
-        div show_event_folder e, :thumbnails_filename
-      end
       row :conference
+      row :slug do
+        link_to e.slug, event_path(slug: e.slug)
+      end
+      row :title
+      row :subtitle
       row :original_language
       row :promoted
-      row :subtitle
       row :link
-      row :slug
       row :description
-      row :persons
-      row :tags
+      row :persons do
+        e.persons_raw
+      end
+      row :tags_raw
       row :date
       row :release_date
+      row :doi do
+        link_to e.doi, e.doi_url unless e.doi.nil?
+      end
+      row :thumb_filename do
+        div show_event_folder e, :thumb_filename unless e.thumb_filename.nil?
+      end
+      row :poster_filename do
+        div show_event_folder e, :poster_filename unless e.poster_filename.nil?
+      end
+      row :timeline_filename do
+        div show_event_folder e, :timeline_filename unless e.timeline_filename.nil?
+      end
+      row :thumbnails_filename do
+        div show_event_folder e, :thumbnails_filename unless e.thumbnails_filename.nil?
+      end
       row :metadata
     end
     table_for e.recordings.video.order('filename ASC') do
@@ -109,6 +117,7 @@ ActiveAdmin.register Event do
       f.input :tags_raw, as: :text
       f.input :date, hint: 'Actual date of the event'
       f.input :release_date, hint: 'Release date for the video recordings'
+      f.input :doi, hint: 'Digital Object Identifier (DOI) e.g. 10.5446/19566 – prefixes are stripped automatically'
     end
     f.inputs 'Files' do
       f.input :slug
@@ -155,7 +164,7 @@ ActiveAdmin.register Event do
     def permitted_params
       params.permit event: [:guid, :thumb_filename, :poster_filename, :timeline_filename, :thumbnails_filename,
                             :conference_id, :promoted, :title, :subtitle, :link, :slug,
-                            :original_language,
+                            :original_language, :doi,
                             :description, :persons_raw, :tags_raw, :date, :release_date, :event_id]
     end
   end

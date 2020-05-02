@@ -20,6 +20,8 @@ gem 'exception_notification'
 gem 'puma'
 gem 'puma_worker_killer'
 
+gem 'utf8-cleaner'
+
 # Simplified production logging
 gem 'lograge'
 
@@ -47,7 +49,7 @@ gem 'elasticsearch-rails'
 
 # Use SCSS for stylesheets
 gem 'sass-rails'
-gem 'bootstrap-sass', '~> 3.3.5'
+gem 'bootstrap-sass', '~> 3.4.1'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
@@ -73,6 +75,14 @@ gem 'rack-cors', :require => 'rack/cors'
 
 # API pagination
 gem 'api-pagination'
+
+# GraphQL
+gem 'graphql', '1.10.2'
+gem 'graphql-query-resolver'
+gem 'search_object', '1.2.3'
+gem 'search_object_graphql', '0.3.1'
+gem 'graphiql-rails', group: :development
+gem 'apollo-federation'
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.

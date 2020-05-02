@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       collection do
         post 'update_promoted'
         post 'update_view_counts'
+        post 'update_feeds'
       end
     end
     resources :recordings, :defaults => { :format => 'json' }
@@ -25,8 +26,11 @@ Rails.application.routes.draw do
     get :index, path: '/', defaults: { format: 'json' }
     get :oembed
     resources :conferences, only: [:index, :show], defaults: { format: 'json' }
-    resources :events, only: %i(index show), defaults: { format: 'json' } do
-      get :search, defaults: { format: 'json' }, on: :collection
+    constraints(id: %r'[^/]+') do
+      resources :events, only: %i(index show), defaults: { format: 'json' } do
+        get :recent, defaults: { format: 'json' }, on: :collection
+        get :search, defaults: { format: 'json' }, on: :collection
+      end
     end
     resources :recordings, only: %i(index show), defaults: { format: 'json' } do
       collection do
@@ -34,6 +38,12 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # GRAPHQL
+  if Rails.env.development?
+    mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
+  end
+  post "/graphql", to: "graphql#execute"
 
   # FRONTEND
   scope module: 'frontend' do
@@ -53,6 +63,7 @@ Rails.application.routes.draw do
     get '/v/:slug/related', to: 'events#playlist_related', as: :playlist_related, :constraints => { slug: %r'[^/]+' }
 
     get '/c/:acronym', to: 'conferences#show', as: :conference
+    get '/c/:acronym/:tag', to: 'conferences#show', as: :conference_tag
 
     get '/a', to: 'conferences#all', as: :all_conferences
     get '/b', to: 'conferences#browse', as: :browse_start
@@ -90,4 +101,5 @@ Rails.application.routes.draw do
     # deprecated 2017-04
     get '/podcast-archive.xml', to: 'feeds#podcast_archive_legacy', defaults: { format: 'xml' }
   end
+
 end
