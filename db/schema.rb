@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180914181622) do
+ActiveRecord::Schema.define(version: 20200410231759) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,8 +68,11 @@ ActiveRecord::Schema.define(version: 20180914181622) do
     t.string "logo", limit: 255
     t.integer "downloaded_events_count", default: 0, null: false
     t.jsonb "metadata", default: {}
-    t.date "event_last_released_at"
+    t.datetime "event_last_released_at"
     t.jsonb "streaming", default: {}
+    t.text "description"
+    t.string "link", limit: 255
+    t.text "custom_css"
     t.index ["acronym"], name: "index_conferences_on_acronym"
     t.index ["streaming"], name: "index_conferences_on_streaming", using: :gin
   end
@@ -93,7 +96,7 @@ ActiveRecord::Schema.define(version: 20180914181622) do
     t.string "slug", limit: 255
     t.string "subtitle", limit: 255
     t.text "tags"
-    t.date "release_date"
+    t.datetime "release_date"
     t.boolean "promoted"
     t.integer "view_count", default: 0
     t.integer "duration", default: 0
@@ -102,6 +105,7 @@ ActiveRecord::Schema.define(version: 20180914181622) do
     t.jsonb "metadata", default: {}
     t.string "timeline_filename", default: ""
     t.string "thumbnails_filename", default: ""
+    t.string "doi"
     t.index ["conference_id"], name: "index_events_on_conference_id"
     t.index ["guid"], name: "index_events_on_guid"
     t.index ["metadata"], name: "index_events_on_metadata", using: :gin
@@ -129,8 +133,8 @@ ActiveRecord::Schema.define(version: 20180914181622) do
   end
 
   create_table "recordings", force: :cascade do |t|
-    t.integer "size"
-    t.integer "length"
+    t.integer "size", comment: "approximate file size in megabytes"
+    t.integer "length", comment: "duration in seconds"
     t.string "mime_type", limit: 255
     t.integer "event_id"
     t.datetime "created_at"
@@ -148,6 +152,14 @@ ActiveRecord::Schema.define(version: 20180914181622) do
     t.index ["mime_type"], name: "index_recordings_on_mime_type"
     t.index ["state", "mime_type"], name: "index_recordings_on_state_and_mime_type"
     t.index ["state"], name: "index_recordings_on_state"
+  end
+
+  create_table "web_feeds", force: :cascade do |t|
+    t.string "key"
+    t.string "kind"
+    t.datetime "last_build"
+    t.text "content"
+    t.index ["key", "kind"], name: "index_web_feeds_on_key_and_kind", unique: true
   end
 
 end

@@ -3,8 +3,18 @@ class Public::EventsController < ActionController::Base
   include Rails::Pagination
   respond_to :json
 
+  # GET /public/events
+  # GET /public/events.json
   def index
-    @events = paginate(Event.all, per_page: 50, max_per_page: 256)
+    @events = paginate(Event.all.includes(:conference), per_page: 50, max_per_page: 256)
+    respond_to { |format| format.json }
+  end
+
+  # GET /public/events/recent
+  # GET /public/events/recent.json
+  def recent
+    @events = Frontend::Event.includes(:conference).recent(100)
+    respond_to { |format| format.json { render :index } }
   end
 
   # GET /public/events/1
@@ -13,13 +23,22 @@ class Public::EventsController < ActionController::Base
   # GET /public/events/654331ae-1710-42e5-bdf4-65a03a80c614.json
   def show
     if params[:id] =~ /\A[0-9]+\z/
-      @event = Event.find(params[:id])
+      @event = Event
+        .includes(recordings: :conference)
+        .find(params[:id])
     else
-      @event = Event.find_by(guid: params[:id])
+      @event = Event
+        .where(guid: params[:id])
+        .or(Event.where(slug: params[:id]))
+        .includes(recordings: :conference)
+        .take
     end
+
     fail ActiveRecord::RecordNotFound unless @event
+    respond_to { |format| format.json }
   end
 
+  # GET /public/events/search?q=foo
   def search
     results = Frontend::Event.query(params[:q]).page(params[:page])
     # calling this just to set headers

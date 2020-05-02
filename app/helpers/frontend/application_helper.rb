@@ -2,18 +2,6 @@ module Frontend
   module ApplicationHelper
     require 'uri'
 
-    def recording_quality(recording)
-      recording.high_quality ? 'high' : 'low'
-    end
-
-    def recording_title(recording)
-      if recording.slides?
-        "slides #{recording.language} #{recording.height}p"
-      else
-        "#{recording.language} #{recording.height}p"
-      end
-    end
-
     def oembed_api_event_url(event)
       (public_oembed_url(url: event_url(slug: event.slug))).freeze
     end
@@ -24,10 +12,6 @@ module Frontend
 
     def facebook_url(title, url)
       'https://www.facebook.com/sharer/sharer.php?t='.freeze + URI.encode_www_form_component(title) + '&u=' + URI.encode_www_form_component(url)
-    end
-
-    def googleplus_url(title, url)
-      'https://plus.google.com/share?title='.freeze + URI.encode_www_form_component(title) + '&url=' + URI.encode_www_form_component(url)
     end
 
     def diaspora_url(title, url)
@@ -54,6 +38,8 @@ module Frontend
         parts += ['playlist']
       elsif @event
         parts += ['event']
+      elsif @tag
+        parts += [@tag]
       end
       current = parts.pop
       yield parts.map!(&:freeze), current.freeze
@@ -65,7 +51,7 @@ module Frontend
     end
 
     def keywords
-      if @event && @event.tags
+      if @event&.tags
         [@event.tags, I18n.t('custom.header.keywords')].join(', ')
       else
         I18n.t('custom.header.keywords')
@@ -73,7 +59,7 @@ module Frontend
     end
 
     def duration_in_minutes(duration)
-      "#{duration / 60} min" if duration > 0
+      "#{duration / 60} min" if duration.positive?
     end
 
     def video_for_flash(recordings)
@@ -106,19 +92,13 @@ module Frontend
       end
     end
 
-    def aspect_ratio_height_vw(high = true)
+    def aspect_ratio_height_vw
       case @conference.aspect_ratio
       when /16:9/
         '56.25vw'
       when /4:3/
         '75vw'
       end
-    end
-
-    def parse_url_host(_urlish)
-      URI.parse(@event.link).host
-    rescue URI::InvalidURIError
-      return ''.freeze
     end
 
     def persons_icon(persons)
@@ -132,6 +112,7 @@ module Frontend
     def display_release_date_title(event)
       return 'event and release date' if event.released_on_event_day?
       return 'event date' if event.date
+
       'video release date'
     end
 
@@ -147,7 +128,7 @@ module Frontend
       )
     end
 
-    def video_player_ivars(args={})
+    def video_player_ivars(args = {})
       {
         height: '100%',
         width: '100%',

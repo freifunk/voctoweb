@@ -18,7 +18,7 @@
 
 //= require purl.min
 //= require handlebars.min-latest
-//= require jquery.bxslider-v4.2.12-patched
+//= require jquery.bxslider-v4.2.1d-ssfrontend
 //= require slider
 //= require feed_toggle
 
@@ -32,10 +32,13 @@
 //= require chromecast/chromecast
 //= require airplay/airplay
 //= require playlist/playlist
-//
+// when adding plugins here, also add them to oembed-player.js
+
 //= require clappr.min
 //= require clappr-thumbnails-plugin
 //= require clappr-playback-rate-plugin
+//= require clappr-dash-shaka-playback
+
 //= require relive-seek
 
 //= require timelens

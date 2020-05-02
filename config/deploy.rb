@@ -11,7 +11,7 @@ set :tmp_dir, "/srv/media/#{fetch(:application)}/tmp"
 
 # https://github.com/capistrano/rvm/
 # set :rvm_type, :user                     # Defaults to: :auto
-set :rvm_ruby_version, '2.4.1@media-site'
+set :rvm_ruby_version, '2.6.5@media-site'
 
 set :use_sudo,        false
 set :stage,           :production
@@ -25,6 +25,10 @@ set :linked_dirs,     %w(log tmp/pids tmp/cache tmp/sockets vendor/bundle public
 set :puma_pid,        -> { "#{shared_path}/tmp/pids/puma.pid" }
 set :puma_env,        -> { fetch(:rack_env, fetch(:rails_env, fetch(:stage))) }
 set :puma_conf,       -> { "#{shared_path}/config/puma.rb" }
+
+# sidekiq
+set :init_system, :systemd
+set :service_unit_name, "voctoweb-sidekiq.service"
 
 namespace :puma do
   desc 'Create Directories for Puma Pids and Socket'

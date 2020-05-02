@@ -3,7 +3,7 @@ module Frontend
     def self.by_quality_string(quality)
       return EventRecordingFilter.new if quality.nil? || quality.empty?
 
-      FeedQuality.eventRecordingFilter(quality)
+      FeedQuality.event_recording_filter(quality)
     end
 
     @target_mime_type = nil
@@ -14,11 +14,15 @@ module Frontend
     end
 
     def filter(event)
-      recordings = event.recordings.video_without_slides
+      recordings = event.recordings
       @recordings = if @target_mime_type
-                      recordings.by_mime_type(@target_mime_type)
+                      if MimeType.is_video(@target_mime_type)
+                        recordings.without_slides.by_mime_type(@target_mime_type)
+                      else
+                        recordings.by_mime_type(@target_mime_type)
+                      end
                     else
-                      recordings.video
+                      recordings.video_without_slides
                     end
 
       @recordings = filter_by_quality(@recordings)

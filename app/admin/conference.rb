@@ -10,9 +10,8 @@ ActiveAdmin.register Conference do
   index do
     selectable_column
     column :acronym
-    column :schedule_state
-    column :recordings_path
     column :slug
+    column :recordings_path
     column :created_at do |conference|
       l(conference.created_at, format: :pretty_datetime)
     end
@@ -31,15 +30,22 @@ ActiveAdmin.register Conference do
       end
       row :slug
       row :logo
+      row :description
+      row :link
       row :aspect_ratio
       row :schedule_url
       row :schedule_xml do
-        div c.schedule_xml.try(:truncate,200)
+        div c.schedule_xml.try(:truncate, 200)
       end
       row :schedule_state
-      row :metadata
       row :created_at
       row :updated_at
+      row :metadata do
+        div c.metadata.try(:truncate, 200)
+      end
+      row :custom_css do
+        div c.custom_css.try(:truncate, 200)
+      end
     end
     table_for c.events.order('slug ASC') do
       column "Events" do |event|
@@ -55,6 +61,8 @@ ActiveAdmin.register Conference do
       f.input :schedule_url
       f.input :aspect_ratio, collection: Conference::ASPECT_RATIO
       f.input :slug
+      f.input :description #, input_html: { class: 'tinymce' }
+      f.input :link
     end
     f.inputs "Paths" do
       f.input :recordings_path, hint: conference.get_recordings_url
@@ -66,6 +74,8 @@ ActiveAdmin.register Conference do
     end
     f.inputs "Meta" do
       f.input :subtitles, :as => :boolean, label: 'Conference has subtitles', hint: 'displays subtitle appeal below player'
+      f.input :custom_css
+
     end
     f.actions
   end
@@ -76,6 +86,10 @@ ActiveAdmin.register Conference do
       conference.url_changed!
     end
     redirect_to action: :show
+  end
+
+  action_item(:add_event, only: [:show, :edit]) do
+    link_to 'View', conference_path(acronym: conference.acronym), method: :get
   end
   
   action_item(:download_schedule, only: :show) do
@@ -90,6 +104,8 @@ ActiveAdmin.register Conference do
     def permitted_params
       params.permit conference: [ :acronym,
                                   :title,
+                                  :description,
+                                  :link,
                                   :schedule_url,
                                   :recordings_path,
                                   :images_path,
@@ -97,7 +113,9 @@ ActiveAdmin.register Conference do
                                   :logo_does_not_contain_title,
                                   :slug,
                                   :aspect_ratio,
-                                  :subtitles ]
+                                  :subtitles,
+                                  :custom_css,
+                                ]
     end
   end
 

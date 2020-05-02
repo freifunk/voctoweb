@@ -20,6 +20,7 @@ class Recording < ApplicationRecord
   scope :video, -> { where(mime_type: MimeType::VIDEO) }
   scope :audio, -> { where(mime_type: MimeType::AUDIO) }
   scope :slides, -> { where("folder LIKE '%slides%'") }
+  scope :without_slides, -> { where("folder NOT LIKE '%slides%'") }
   scope :video_without_slides, -> { video.where("folder NOT LIKE '%slides%'") }
   scope :subtitle, -> { where(mime_type: MimeType::SUBTITLE) }
   scope :html5, -> { where(html5: true) }
@@ -85,6 +86,18 @@ class Recording < ApplicationRecord
     end
   end
 
+  def label
+    if slides?
+      "slides #{language} #{height}p"
+    else
+      "#{language} #{height}p"
+    end
+  end
+
+  def quality_label
+    high_quality ? 'high' : 'low'
+  end
+
   def min_width(maxwidth = nil)
     width = 1280
     width = [width, self.width.to_i].min if self.width
@@ -105,6 +118,10 @@ class Recording < ApplicationRecord
 
   def language_iso_639_1
     Languages.to_iso_639_1(language)
+  end
+
+  def language_label
+    Languages.to_string(language)
   end
 
   def languages

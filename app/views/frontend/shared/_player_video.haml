@@ -1,22 +1,25 @@
+<!-- Mediaelement Player -->
 
 -# be aware that this partial is used for the event page AND for the oembed code
 
-%video.video{controls: 'controls', 'data-id' => event.id, poster: event.poster_url, width: width, height: height, preload: 'auto', 'data-timeline' => (event.timelens_present? ? event.timeline_url : nil)}
+%video.video{controls: 'controls', 'data-id' => event.id, poster: event.poster_url, width: width, height: height, preload: 'metadata', 'data-timeline' => (event.timelens_present? ? event.timeline_url : nil)}
   - event.videos_sorted_by_language.each do |recording|
-    %source{type: recording.mime_type, src: h(recording.url), data: { lang: recording.language, quality: recording_quality(recording) }, title: recording_title(recording)}
+    %source{type: recording.mime_type, src: h(recording.url), data: { lang: recording.language, quality: recording.quality_label }, title: recording.label}
 
   - event.recordings.subtitle.each do |track|
     %track{kind: "subtitles", src: h(track.cors_url), srclang: track.language_iso_639_1()}
 
   - if event.timelens_present?
-    %track{kind: "metadata", label: "thumbnails", src: event.thumbnails_url, srclang: "unknown"}
+    %track{kind: "metadata", label: "thumbnails", src: event.thumbnails_url, srclang: ""}
 
   %link{rel: "postroll", href: postroll_path(slug: event.slug)}
 
 :javascript
   $(function() {
-    var stamp = window.location.hash.split('#t=')[1] || window.location.hash.split('&t=')[1],
-        lang = (window.location.hash.split('#l=')[1] || '').split('&')[0],
+    var params = new URLSearchParams(window.location.hash && window.location.hash.split('#')[1]);
+    var stamp = params.get('t'),
+        lang = params.get('l'),
+        srt = params.get('s'),
         $video = $('video'),
         promises = [];
 
@@ -35,27 +38,67 @@
         usePluginFullScreen: true,
         enableAutosize: true,
         stretching: '#{stretching}',
-        features: ['skipback', 'playpause', 'jumpforward', 'progress', 'current', 'duration', 'tracks', 'volume', 'speed', 'sourcechooser', 'fullscreen', 'postroll', 'timelens'],
+        features: ['skipback', 'playpause', 'jumpforward', 'progress', 'current', 'duration', 
+          'tracks', 'volume', 'speed', 'sourcechooser', 'fullscreen', 'postroll', 'timelens'],
         skipBackInterval: 15,
         startLanguage: lang,
-        success: function (mediaElement, originalNode, instance) {
+        success: function (mediaElement, originalNode, player) {
+          window.mediaElement = mediaElement;
+          window.player = player;
+
+          if (srt || srt === "") {
+            var subtitles = player.tracks.filter(x => x.kind === 'subtitles');
+            var track = subtitles.filter(x => x.srclang === srt);
+            console.log(track);
+            if (track) {
+              player.setTrack(track[0].trackId);
+            } else {
+              player.setTrack(subtitles[0].trackId);
+            }
+          }
+
           mediaElement.addEventListener('canplay', function () {
-            if(stamp) {
+            if (stamp) {
               mediaElement.setCurrentTime(stamp);
               stamp = null;
-              // Toggle play on/off so that the preview image is correct:
-              mediaElement.play();
-              mediaElement.pause();
             }
           });
           mediaElement.addEventListener('playing', function () {
             $.post("/public/recordings/count", {event_id: $video.data('id'), src: mediaElement.src});
           }, false);
-          mediaElement.addEventListener('pause', function() {
-            var l = instance.options.startLanguage || '';
+
+          function updateHash() {
+            var l = player.options.startLanguage || '';
             var hash =  (l ? '#l='+l+'&t=' : '#t=') + Math.round(mediaElement.currentTime);
+            if (srt) {
+              hash += '&s=' + srt;
+            }
             window.location.replaceHash(hash);
-          }, false);
+          }          
+          mediaElement.addEventListener('pause', updateHash, false);
+          mediaElement.addEventListener('seeked', updateHash, false);
+
+          document.addEventListener('keypress', function (event) {
+            // do not capture events from input fields
+            if (event.target.tagName === 'INPUT') {
+              return;
+            }
+            switch(event.key) {
+              case 'k':
+              case ' ':
+                event.preventDefault();
+                player.paused ? player.play() : player.pause();
+                break; 
+              case 'f':
+                player.fullscreen();
+                //event.preventDefault();   
+                break; 
+              default:
+                // forward other events to player
+                mediaElement.dispatchEvent(event);
+                console.log(event);
+            }
+          });
         }
       });
     });

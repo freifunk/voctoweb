@@ -41,6 +41,8 @@ class Api::EventsController < ApiController
   # PATCH/PUT /api/events/1.json
   # PATCH/PUT /api/events/654331ae-1710-42e5-bdf4-65a03a80c614.json
   def update
+    fail ActiveRecord::RecordNotFound unless @event
+
     respond_to do |format|
       if @event.update(event_params)
         format.json { render :show, status: :ok }
@@ -57,6 +59,15 @@ class Api::EventsController < ApiController
     respond_to do |format|
       format.json { head :no_content }
     end
+  end
+
+  def update_feeds
+    Feed::PodcastWorker.perform_async
+    Feed::LegacyWorker.perform_async
+    Feed::AudioWorker.perform_async
+    Feed::ArchiveWorker.perform_async
+    Feed::ArchiveLegacyWorker.perform_async
+    render json: { status: 'ok' }
   end
 
   def update_promoted
@@ -82,7 +93,6 @@ class Api::EventsController < ApiController
 
   def create_event(params)
     @event.transaction do
-      @event.release_date = Time.now unless @event.release_date
       @event.set_image_filenames(params[:thumb_url], params[:poster_url], params[:timeline_url], params[:thumbnails_url])
       return @event.save
     end
@@ -97,6 +107,7 @@ class Api::EventsController < ApiController
       :conference_id,
       :metadata,
       :description, :date,
+      :doi,
       { persons: [] }, { tags: [] },
       :promoted, :release_date)
   end
