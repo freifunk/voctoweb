@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '~> 5.1.0'
 gem 'dotenv-rails'
 
-gem 'activeadmin'
+gem 'activeadmin', '>= 2.4.0'
 
 gem 'tinymce-rails'
 gem 'devise'
