@@ -1,32 +1,32 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.0'
-gem 'dotenv-rails'
+gem 'rails', '~> 5.2.4', '>= 5.2.4.3'
+gem 'dotenv-rails', '>= 2.5.0'
 
-gem 'activeadmin'
+gem 'activeadmin', '>= 2.4.0'
 
-gem 'tinymce-rails'
-gem 'devise'
+gem 'tinymce-rails', '>= 5.1.4.1'
+gem 'devise', '>= 4.7.1'
 gem 'aasm'
 gem 'sidekiq'
 gem 'foreman'
 
 # rails cache
-gem 'redis-rails'
-gem 'exception_notification'
+gem 'redis-rails', '>= 5.0.2'
+gem 'exception_notification', '>= 4.2.2'
 
 # Bundle puma application server
 gem 'puma'
 gem 'puma_worker_killer'
 
-gem 'utf8-cleaner'
+gem 'utf8-cleaner', '>= 0.2.5'
 
 # Simplified production logging
-gem 'lograge'
+gem 'lograge', '>= 0.10.0'
 
 group :development do
-  gem 'bullet'
+  gem 'bullet', '>= 5.8.1'
   gem 'capistrano', '~> 3.5.0', group: :capistrano, require: false
   gem 'capistrano-rvm',     require: false
   gem 'capistrano-rails',   require: false
@@ -41,33 +41,33 @@ gem 'haml'
 gem 'redcarpet'
 
 # kaminari must be listed before elasticsearch and api-pagination
-gem 'kaminari'
+gem 'kaminari', '>= 1.2.0'
 
 gem 'pg', group: :postgresql
-gem 'elasticsearch-model'
+gem 'elasticsearch-model', '>= 6.0.0'
 gem 'elasticsearch-rails'
 
 # Use SCSS for stylesheets
-gem 'sass-rails'
+gem 'sass-rails', '>= 5.0.7'
 gem 'bootstrap-sass', '~> 3.4.1'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 
 # Use CoffeeScript for .js.coffee assets and views
-gem 'coffee-rails'
+gem 'coffee-rails', '>= 4.2.2'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library
-gem 'jquery-rails'
+gem 'jquery-rails', '>= 4.3.5'
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder'
+gem 'jbuilder', '>= 2.7.0'
 gem 'yajl-ruby'
 
 # Cross origin resource sharing for public json api and ajax clients
@@ -81,7 +81,7 @@ gem 'graphql'
 gem 'graphql-query-resolver'
 gem 'search_object'
 gem 'search_object_graphql'
-gem 'graphiql-rails'
+gem 'graphiql-rails', '>= 1.7.0'
 gem 'apollo-federation'
 
 group :doc do
@@ -96,6 +96,6 @@ group :development, :test do
 end
 
 group :test do
-  gem 'factory_bot_rails'
-  gem 'rails-controller-testing'
+  gem 'factory_bot_rails', '>= 4.11.1'
+  gem 'rails-controller-testing', '>= 1.0.2'
 end
