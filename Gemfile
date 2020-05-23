@@ -17,8 +17,8 @@ gem 'redis-rails'
 gem 'exception_notification'
 
 # Bundle puma application server
-gem 'puma'
-gem 'puma_worker_killer'
+gem 'puma', '>= 4.3.5'
+gem 'puma_worker_killer', '>= 0.1.1'
 
 gem 'utf8-cleaner'
 
