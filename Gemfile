@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '~> 5.1.0'
 gem 'dotenv-rails'
 
-gem 'activeadmin'
+gem 'activeadmin', '>= 2.4.0'
 
 gem 'tinymce-rails'
 gem 'devise'
@@ -41,7 +41,7 @@ gem 'haml'
 gem 'redcarpet'
 
 # kaminari must be listed before elasticsearch and api-pagination
-gem 'kaminari'
+gem 'kaminari', '>= 1.2.1'
 
 gem 'pg', group: :postgresql
 gem 'elasticsearch-model'
