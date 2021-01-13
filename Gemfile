@@ -38,7 +38,7 @@ group :development do
 end
 
 gem 'haml'
-gem 'redcarpet'
+gem 'redcarpet', '>= 3.5.1'
 
 # kaminari must be listed before elasticsearch and api-pagination
 gem 'kaminari'
