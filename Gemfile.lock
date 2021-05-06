@@ -282,7 +282,7 @@ GEM
     rb-fsevent (0.10.4)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    rdoc (6.0.4)
+    rdoc (6.3.1)
     redcarpet (3.4.0)
     redis (4.0.3)
     redis-actionpack (5.0.2)
@@ -327,7 +327,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    sdoc (1.0.0)
+    sdoc (2.1.0)
       rdoc (>= 5.0)
     search_object (1.2.3)
     search_object_graphql (0.3.1)
@@ -420,7 +420,7 @@ DEPENDENCIES
   redis-rails
   ruby-graphviz
   sass-rails
-  sdoc
+  sdoc (>= 1.0.0)
   search_object
   search_object_graphql
   sidekiq
