@@ -68,7 +68,7 @@ gem 'turbolinks'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder'
-gem 'yajl-ruby'
+gem 'yajl-ruby', '>= 1.4.2'
 
 # Cross origin resource sharing for public json api and ajax clients
 gem 'rack-cors', :require => 'rack/cors'
