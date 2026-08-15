@@ -73,7 +73,10 @@ ENV BUNDLE_FORCE_RUBY_PLATFORM=1 \
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /voctoweb /voctoweb
 
-RUN chown -R rails:rails /voctoweb
+# tmp/ is gitignored / dockerignored — Puma needs pids/ for the pidfile.
+RUN mkdir -p tmp/pids tmp/cache tmp/sockets log \
+  && chown -R rails:rails /voctoweb
+
 USER rails
 
 EXPOSE 3000
