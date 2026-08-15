@@ -32,7 +32,7 @@ class Feed::FolderWorkerTest < ActiveSupport::TestCase
     end
 
     f = WebFeed.find_by!(kind: @conference.acronym+'mp3', key: 'podcast_folder')
-    assert_includes f.content, "<link>https://media.ccc.de/v/#{audio_event.slug}</link>"
+    assert_includes f.content, "<link>https://#{Settings.frontend_host}/v/#{audio_event.slug}</link>"
     refute_empty f.content
   end
 

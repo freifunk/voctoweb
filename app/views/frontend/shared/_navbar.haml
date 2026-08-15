@@ -4,6 +4,7 @@
       %a.navbar-brand(href='/')
         %span
           %img{src: SiteSettings.current.logo_url_or_default, alt: SiteSettings.current.logo_alt_or_default}
+          media.freifunk.net
 
     - if content_for?(:navbar)
       = yield :navbar

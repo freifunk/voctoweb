@@ -7,7 +7,9 @@
 # server 'example.com', user: 'deploy', roles: %w{app web}, other_property: :other_value
 # server 'db.example.com', user: 'deploy', roles: %w{db}
 
-server 'app.media.ccc.de', roles: %w{app db web}, primary: true
+# Set CAP_* env vars for Capistrano. Replace with the production app host when known.
+# server 'app.media.freifunk.net', roles: %w{app db web}, primary: true
+server ENV.fetch('CAP_HOST', 'app.media.freifunk.net'), roles: %w{app db web}, primary: true
 
 # role-based syntax
 # ==================

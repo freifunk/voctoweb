@@ -1,9 +1,9 @@
 - content_for :title do
-  about media.ccc.de
+  about media.freifunk.net
 
 .container
 
-  %h1 About media.ccc.de
+  %h1 About media.freifunk.net
   %h3
     Feel free to download as much as you like, all our traffic is sponsored.
 
@@ -11,7 +11,7 @@
 
   %h2{id: 'license'} Licenses
   %p
-    The license displayed in the actual video file applies, typically the corresponding logo and licence URL are displayed as part of the outro or intro, or the file's metadata. If there is no license encoded in the video file we suggest you ask the event organizers, reachable via the "Fahrplan" link below the individual video. 
+    The license displayed in the actual video file applies, typically the corresponding logo and licence URL are displayed as part of the outro or intro, or the file's metadata. If there is no license encoded in the video file we suggest you ask the event organizers.
 
   %p
     E.g. for a 
@@ -29,24 +29,16 @@
       %li Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
       %li No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
 
-  %h2{id: 'contact'}  Contact
+  %h2{id: 'contact'} Contact
   %p
-    If you are anyhow related to the Chaos Computer Club and would like us to convert and publish your video material on this website, feel free to contact us.
+    If you are anyhow related to the Freifunk community and would like us to convert and publish your video material on this website, feel free to contact us.
 
-    Whilst we hope you find the provided video material interesting and informative we can give no assurances or warranty regarding its quality. The opinions expressed in the video material do not necessarily state or reflect those of the Chaos Computer Club.
+    Whilst we hope you find the provided video material interesting and informative we can give no assurances or warranty regarding its quality. The opinions expressed in the video material do not necessarily state or reflect those of the Freifunk community.
 
-  %p Contact for questions about video production, streaming or uploads:
-  %ul
-    %li 
-      %a{href: 'mailto:voc@c3voc.de'} voc@c3voc.de
-    %li 
-      %a{href: 'irc://irc.hackint.org:9999/#voc-lounge'} #voc-lounge
-      %a{href: 'https://chat.hackint.org/?join=voc-lounge'} [Web-IRC]
-      %a{href: 'https://matrix.to/#/#voc-lounge:hackint.org'} [Matrix]
-  %p Contact for other questions about this site:
+  %p Contact for questions about this site:
   %ul
     %li
-      %a{href: 'mailto:media@c3voc.de'} media@c3voc.de
+      %a{href: 'mailto:web@freifunk.net'} web@freifunk.net
 
   %p
     Please check the issue tracker below before sending us emails.
@@ -54,17 +46,17 @@
   %h2 Bug reports and feature requests
   %p
     Please use the
-    %a{href: 'https://github.com/voc/voctoweb/issues'} issue tracker
+    %a{href: 'https://github.com/freifunk/voctoweb/issues'} issue tracker
     on GitHub to let us know about errors
-    %a{href: '//media.ccc.de'} media.ccc.de
+    %a{href: '//media.freifunk.net'} media.freifunk.net
     \. The latest source code version of this platform is also hosted on
-    %a{href: 'https://github.com/voc/voctoweb'} GitHub
+    %a{href: 'https://github.com/freifunk/voctoweb'} GitHub
     and ready to expect your pull-requests.
 
   %h2 Direct Download
 
   :markdown
-    You can download all files directly from our [CDN](https://cdn.media.ccc.de). The MP4 files might contain multiple audio tracks when we were provided live translations e.g. from [c3lingo](https://c3lingo.org). Some files even contain an additional video track with only the slides. Most desktop video players allow you to choose between them. Please look for the "tracks selection" in your desktop video player e.g. VLC. Subtitles are provided by [c3subtitles](https://c3subtitles.de) and should be automatically found, when you drop them beside the video files. 
+    You can download all files directly from our [CDN](https://cdn.media.freifunk.net).
 
   %h2{id: 'privacy'} Privacy Policy
 
@@ -88,13 +80,12 @@
 
   %h3 Current Mirrors
 
-  #status
-
   %p
     :markdown
-      You can append `?mirrorlist` or `?mirrorstats` to all file URLs on our [CDN](https://cdn.media.ccc.de),
-      [like](https://cdn.media.ccc.de/congress/2016/webm-hd/33c3-8429-eng-deu-fra-33C3_Opening_Ceremony_webm-hd.webm?mirrorlist)
-      [this](https://cdn.media.ccc.de/congress/2016/webm-hd/33c3-8429-eng-deu-fra-33C3_Opening_Ceremony_webm-hd.webm?mirrorstats).
+      You can append `?mirrorlist` or `?mirrorstats` to all file URLs on our [CDN](https://cdn.media.freifunk.net),
+      [like](https://cdn.media.freifunk.net/d97d0ab8-90f9-42bb-bbb9-972afad2a122/18-hd.webm?mirrorlist)
+      [this](https://cdn.media.freifunk.net/d97d0ab8-90f9-42bb-bbb9-972afad2a122/18-hd.webm?mirrorstats).
+      A live mirror-status JSON API (like media.ccc.de’s cdn-api) is not wired here yet.
 
   %h2#apps Apps
 
@@ -102,77 +93,14 @@
     - Android:
       - [NewPipe](https://newpipe.net) Cool Android app, also includes support for PeerTube and other popular platforms.
       - [Chaosflix](https://github.com/NiciDieNase/chaosflix). App for Android, Android TV and Fire TV.
-      - [Miru](https://miru.js.org/en/) [media.ccc.de extension](https://miru-repo.0n0.dev/)
-      - [VoctoTV (Beta)](https://github.com/justjanne/voctotv/). App for Android and AndroidTV with Chromecast support.
     - CLI:
-      - [yt-dlp](https://github.com/yt-dlp/yt-dlp/) [module](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/extractor/ccc.py)
-      - [youtube-dl](https://github.com/ytdl-org/youtube-dl) [module](https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/extractor/ccc.py)
-    - Android TV:
-      - [Chaosflix](https://github.com/NiciDieNase/chaosflix). App for Android, Android TV and Fire TV.
-      - [Android TV App](https://github.com/stefanmedack/cccTV). Runs on Android TV and Fire TV. Tablet support in progress
-      - [VoctoTV (Beta)](https://github.com/justjanne/voctotv/). App for Android and AndroidTV with Chromecast support.
-    - LG WebOS: 
-      - [WebOS_media_ccc_de](https://github.com/raben2/WebOS_media_ccc_de). Wrapper to the media.ccc.de frontend.
-      - [CCCBib](https://github.com/volkovmqx/cccbib). Experimental media library application for webOS.
-    - Apple TV, iOS, macOS, visionOS:
-      - [HackerTube](https://github.com/mbernson/HackerTube). App for Apple TV, iOS/iPadOS, macOS and visionOS.
-    - Kodi:
-      - [plugin.video.media-ccc-de](https://github.com/voc/plugin.video.media-ccc-de#mediacccde-for-kodi) Official Kodi plugin
-    - Dreambox:
-      - [Enigma2 Plugin](https://github.com/opendreambox/enigma2-plugins/tree/master/c3vocupdater). Plugin for Dreambox set-top-boxes, distributed via packages Feed by Dream, Newnigma2 and Merlin4. [German blog post](https://www.dreambox-blog.com/index.php/9347/c3voc-updater-live-streams-vom-chaos-computer-club-fuer-die-dreambox)
+      - [yt-dlp](https://github.com/yt-dlp/yt-dlp/)
+      - [youtube-dl](https://github.com/ytdl-org/youtube-dl)
     - Others:
-      - Maybe yours? Please [let us know](https://github.com/voc/voctoweb/issues/new)!
-
+      - Apps built for media.ccc.de often work against compatible voctoweb APIs. Please [let us know](https://github.com/freifunk/voctoweb/issues/new) what you use!
 
   %h2{id: 'imprint'} Imprint
 
   %p
     :markdown
-      Please see [ccc.de](//ccc.de/en/imprint).
-
-  %script#status-template{type: 'text/x-handlebars-template'}
-    <table class="table table-striped table-condensed">
-    <tr>
-    <th>Name</th>
-    <th>Location</th>
-    <th>Last Scan</th>
-    <th>Monthly TB (estimate)</th>
-    <th>Monthly Downloads</th>
-    <th>File Count</th>
-    <th>Stats / Sponsor</th>
-    </tr>
-    {{#each MirrorList}}
-    {{#if this.HttpURL}}
-    <tr>
-    {{else}}
-    <tr class='warning'>
-    {{/if}}
-    <td><a href="{{this.HttpURL}}">{{this.ID}}</a></td>
-    <td><a href="//www.openstreetmap.org/#map=9/{{this.Latitude}}/{{this.Longitude}}">{{this.ContinentCode}}/{{this.CountryCodes}}</a></td>
-    <td>{{formatDate this.LastSync}}</td>
-    <td>{{gb this.MonthBytes}}</td>
-    <td>{{this.MonthDownloads}}</td>
-    <td>{{this.FileCount}}</td>
-    <td>{{#if this.SponsorURL}}<a href="{{this.SponsorURL}}">{{this.SponsorName}}</a>{{else}}{{this.SponsorName}}{{/if}}
-    </tr>
-    {{/each}}
-    </table>
-
-  :javascript
-    Handlebars.registerHelper("formatDate", function(datetime) {
-      var aDate = new Date(1000*datetime);
-      return aDate.toLocaleString();
-    });
-    Handlebars.registerHelper("gb", function(bytes) {
-      return Math.floor(bytes / Math.pow(1024, 4));
-    });
-    $(document).ready(function() {
-      var source = $('#status-template').html();
-      var template = Handlebars.compile(source);
-      var target = $('#status');
-      $.get("https://cdn-api.media.ccc.de/", function(data,status,xhr){
-        var html = template(data);
-        target.html(html);
-      }, "json");
-    });
-
+      Please see [freifunk.net](https://freifunk.net/webteam).
