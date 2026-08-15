@@ -1,13 +1,18 @@
 # Docker production Puma (mounted over image default).
 # Tune WEB_CONCURRENCY / RAILS_MAX_THREADS / PUMA_RAM_MB via environment.
 
+require "fileutils"
+
 max_threads_count = ENV.fetch("RAILS_MAX_THREADS", 5).to_i
 min_threads_count = ENV.fetch("RAILS_MIN_THREADS", max_threads_count).to_i
 threads min_threads_count, max_threads_count
 
 port ENV.fetch("PORT", 3000)
 environment ENV.fetch("RAILS_ENV", "production")
-pidfile ENV.fetch("PIDFILE", "tmp/pids/server.pid")
+
+pidfile_path = ENV.fetch("PIDFILE", "tmp/pids/server.pid")
+FileUtils.mkdir_p(File.dirname(pidfile_path))
+pidfile pidfile_path
 
 workers ENV.fetch("WEB_CONCURRENCY", 2).to_i
 preload_app!
@@ -25,6 +30,7 @@ before_fork do
   PumaWorkerKiller.start
 end
 
-on_worker_boot do
+# Puma 8: before_worker_boot (on_worker_boot is deprecated)
+before_worker_boot do
   ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
 end
