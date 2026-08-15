@@ -3,6 +3,7 @@
 Fork of [voc/voctoweb](https://github.com/voc/voctoweb) for [media.freifunk.net](https://media.freifunk.net).
 
 - Branding overlay: [docs/BRANDING.md](docs/BRANDING.md)
+- Production Docker: [docker/production/README.md](docker/production/README.md) (`docker-compose.production.yml`)
 - Upstream sync: weekly `.github/workflows/sync-upstream.yml` + Renovate
 - Cutover/staging runbooks live locally in `migration/` (gitignored)
 

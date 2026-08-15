@@ -1,13 +1,29 @@
+# Build context hygiene for Dockerfile / Dockerfile.production
 .git
 .gitignore
+.dockerignore
 
-Dockerfile
-docker-compose.yml
+# Local / large / secret
+migration
+*.dump
+docker/db
+docker/content
+docker/ssh
+docker/production/.env
+docker/production/database.yml
+docker/production/settings.yml
 
-*.txt
-*.md
+# Dev / test noise
+log
+tmp
+storage
+coverage
+vendor/bundle
+node_modules
+.ruby-lsp
+.idea
+.vscode
 
-docker/
-log/
-test/
-tmp/
+# Docs drawings (not needed at runtime)
+docs/*.png
+docs/*.drawio
