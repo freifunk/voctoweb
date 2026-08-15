@@ -11,13 +11,14 @@
     --neutral-100: #f5f5f5;
     --neutral-50: #fafafa;
   
-    --indigo-950: #1e1b4b;
-    --indigo-900: #312e81;
-    --indigo-800: #3730a3;
-    --indigo-700: #4338ca;
-    --indigo-600: #4f46e5;
-    --indigo-500: #6366f1;
-    --indigo-400: #818cf8;
+    /* Freifunk pink scale (replaces VOC indigo) */
+    --freifunk-950: #4a0f24;
+    --freifunk-900: #6b1635;
+    --freifunk-800: #8f1f46;
+    --freifunk-700: #b02856;
+    --freifunk-600: #c93262;
+    --freifunk-500: #df3a6c;
+    --freifunk-400: #e85f88;
 
     --font-sans-serif: "Estrangelo Edessa", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --font-body: var(--font-sans-serif);
@@ -26,10 +27,10 @@
 }
 
 @mixin light-variables {
-    --primary-100: var(--indigo-700);
-    --primary-200: var(--indigo-600);
-    --primary-300: var(--indigo-500);
-    --primary-400: var(--indigo-400);
+    --primary-100: var(--freifunk-700);
+    --primary-200: var(--freifunk-600);
+    --primary-300: var(--freifunk-500);
+    --primary-400: var(--freifunk-400);
 
     --surface-50: var(--neutral-50);
     --surface-100: var(--neutral-100);
@@ -40,11 +41,12 @@
 
 
     --text-primary: rgb(0, 0, 0);
-    --text-heading: rgba(0, 0, 0, 0.95);
+    /* Headings/links in Freifunk pink like media.freifunk.net historically */
+    --text-heading: var(--freifunk-600);
     --text-secondary: rgba(0, 0, 0, 0.80);
     --text-muted: rgba(0, 0, 0, 0.65);
-    --text-link: var(--primary-400);
-    --text-visited: var(--primary-300);
+    --text-link: var(--freifunk-500);
+    --text-visited: var(--freifunk-700);
     --text-inverted: white;
 
     --border-50: var(--surface-50);
@@ -57,10 +59,10 @@
 }
 
 @mixin dark-variables {
-    --primary-100: var(--indigo-700);
-    --primary-200: var(--indigo-600);
-    --primary-300: var(--indigo-500);
-    --primary-400: var(--indigo-400);
+    --primary-100: var(--freifunk-700);
+    --primary-200: var(--freifunk-600);
+    --primary-300: var(--freifunk-500);
+    --primary-400: var(--freifunk-400);
     
     --surface-50: var(--neutral-950);
     --surface-100: var(--neutral-900);
@@ -70,9 +72,12 @@
     --surface-400: var(--neutral-500);
 
     --text-primary: rgb(255, 255, 255);
-    --text-heading: rgba(255, 255, 255, 0.95);
+    --text-heading: var(--freifunk-400);
     --text-secondary: rgba(255, 255, 255, 0.80);
     --text-muted: rgba(255, 255, 255, 0.65);
+    --text-link: var(--freifunk-400);
+    --text-visited: var(--freifunk-500);
+    --text-inverted: white;
 }
 
 html, .light {
@@ -108,8 +113,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* we don't want link colors to apply to button style links */
 a.btn {
-    color: var(--text-primary);
+    color: var(--text-inverted);
 }
 .btn.btn-primary, .btn.btn-secondary {
     color: var(--text-inverted);
+    background-color: var(--freifunk-500);
+    border-color: var(--freifunk-600);
+
+    &:hover, &:focus, &:active {
+        background-color: var(--freifunk-600);
+        border-color: var(--freifunk-700);
+        color: var(--text-inverted);
+    }
 }

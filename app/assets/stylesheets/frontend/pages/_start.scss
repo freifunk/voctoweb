@@ -25,10 +25,12 @@ body.page-start {
       border-bottom-right-radius: 25px;
       font-size: 22px;
       height: $h;
+      color: var(--freifunk-500);
       background-color: $gray-lighter;
       border-color: #ccc;
 
       &:hover {
+        color: var(--freifunk-700);
         background-color: #ccc;
       }
 

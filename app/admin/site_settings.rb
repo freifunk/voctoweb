@@ -28,7 +28,7 @@ ActiveAdmin.register SiteSettings do
       f.input :promoted_banner_url,
               label: 'Promoted banner image URL',
               hint: 'Full URL to the background image used by .promoted.themed-banner. ' \
-                    "Leave blank for the default:  \"#{SiteSettings::DEFAULT_BANNER_URL}\"."
+                    'Leave blank for the local default (frontend/promoted_bg.jpg).'
       f.input :live_banner_url,
               label: 'Live banner image URL (optional)',
               hint: 'Full URL to a separate background image used on the .live banner. ' \
@@ -38,10 +38,10 @@ ActiveAdmin.register SiteSettings do
       f.input :logo_url,
               label: 'Logo image URL',
               hint: 'Full URL to the logo shown in the navbar. ' \
-                    "Default:  \"#{SiteSettings::DEFAULT_LOGO_URL}\"."
+                    'Leave blank for the local default (frontend/voctocat-header.svg).'
       f.input :logo_alt,
               label: 'Logo alt text',
-              hint: 'For accessiblity, set when the logo is noticeably different from the default.' \
+              hint: 'For accessibility, set when the logo is noticeably different from the default. ' \
                     "Default: \"#{SiteSettings::DEFAULT_LOGO_ALT}\"."
     end
     f.actions do

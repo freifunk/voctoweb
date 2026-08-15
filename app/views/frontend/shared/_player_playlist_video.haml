@@ -68,7 +68,7 @@
             setText('h2.event_title', ev.dataset.title);
             setText('p.persons', ev.dataset.persons);
           }
-          if (mediaElement.src.indexOf('://cdn.media.ccc.de') > 0) {
+          if (mediaElement.src.indexOf('://cdn.media.freifunk.net') > 0) {
             MirrorbrainFix.selectMirror(mediaElement.src, function(mirror) {
               mediaElement.setSrc(mirror);
               mediaElement.play();

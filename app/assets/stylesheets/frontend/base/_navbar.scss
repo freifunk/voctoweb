@@ -18,18 +18,33 @@
 
   .navbar-brand {
     padding: 9px 15px;
+    color: #fff !important;
+    font-weight: 600;
+
+    &:hover, &:focus {
+      color: #fff !important;
+    }
+
     img {
       height: 33px;
+      margin-right: 0.35em;
     }
   }
 
   .btn.btn-default {
-    /* the button is always white, so no theme-dependent color is needed here */
     color: var(--neutral-800);
+    background-color: #fff;
+    border-color: #fff;
 
     padding: 0.2em;
     height: 1.8em;
     max-width: 2em;
+
+    &:hover, &:focus, &:active {
+      color: var(--freifunk-500);
+      background-color: #fff;
+      border-color: #fff;
+    }
   }
 
   .navbar-form {
@@ -54,6 +69,9 @@
   }
 }
 
-.navbar-default {
-  background-color: var(--surface-200);
+/* Always Freifunk pink bar (ignore VOC .dark surface override on navbar) */
+.navbar-default,
+.navbar.navbar-default.dark {
+  background-color: var(--freifunk-500);
+  border-color: transparent;
 }
