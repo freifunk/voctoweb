@@ -1,0 +1,96 @@
+# Merge voc/voctoweb main into freifunk/voctoweb weekly so the fork does not drift.
+# Conflicts in branding overlay files leave the PR open for manual resolution.
+name: Sync upstream
+
+on:
+  schedule:
+    # Mondays 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Add voc remote and fetch
+        run: |
+          git remote add voc https://github.com/voc/voctoweb.git 2>/dev/null || git remote set-url voc https://github.com/voc/voctoweb.git
+          git fetch voc main
+
+      - name: Merge voc/main
+        id: merge
+        shell: bash
+        run: |
+          BRANCH="sync/voc-main-$(date -u +%Y%m%d)"
+          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
+          git checkout -B "${BRANCH}"
+
+          if git merge --no-edit voc/main; then
+            echo "conflicts=false" >> "$GITHUB_OUTPUT"
+            if [ -f UPSTREAM ]; then
+              SHA=$(git rev-parse voc/main)
+              printf 'voc/voctoweb@%s\n' "${SHA}" > UPSTREAM
+              git add UPSTREAM
+              git diff --cached --quiet || git commit -m "chore(sync): bump UPSTREAM to ${SHA}"
+            fi
+          else
+            echo "conflicts=true" >> "$GITHUB_OUTPUT"
+            # Only stage conflicted tracked files — never git add -A (dumps/secrets).
+            mapfile -t CONFLICTED < <(git diff --name-only --diff-filter=U)
+            if [ "${#CONFLICTED[@]}" -eq 0 ]; then
+              echo "Merge failed but no unmerged paths; aborting." >&2
+              git merge --abort
+              exit 1
+            fi
+            git add -- "${CONFLICTED[@]}"
+            git commit -m "chore(sync): merge voc/main with conflicts (resolve before merge)"
+          fi
+
+      - name: Push branch
+        run: git push -u origin "HEAD:${{ steps.merge.outputs.branch }}" --force-with-lease
+
+      - name: Open or update pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.merge.outputs.branch }}
+          CONFLICTS: ${{ steps.merge.outputs.conflicts }}
+        run: |
+          TITLE="chore(sync): merge voc/main $(date -u +%Y-%m-%d)"
+          if [ "${CONFLICTS}" = "true" ]; then
+            STATUS_LINE="**Merge conflicts detected** — resolve branding overlay files, then merge. Only conflicted tracked paths were staged."
+          else
+            STATUS_LINE="No conflicts. Review CI, then merge."
+          fi
+          BODY=$(cat <<EOF
+          ## Summary
+          Weekly sync of [voc/voctoweb](https://github.com/voc/voctoweb) \`main\` into freifunk/voctoweb.
+
+          ${STATUS_LINE}
+
+          ## Checklist
+          - [ ] CI green
+          - [ ] Branding overlay still correct (locales, footer, about, oembed, brand color)
+          - [ ] Smoke: home, search, about (after deploy to staging)
+          EOF
+          )
+          EXISTING=$(gh pr list --head "${BRANCH}" --json number --jq '.[0].number // empty')
+          if [ -n "${EXISTING}" ]; then
+            gh pr edit "${EXISTING}" --title "${TITLE}" --body "${BODY}"
+          else
+            gh pr create --base main --head "${BRANCH}" --title "${TITLE}" --body "${BODY}" || true
+          fi
