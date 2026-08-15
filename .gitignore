@@ -73,3 +73,11 @@ config/settings.yml
 /.bundle
 /.solargraph.yml
 /filesizes.json
+
+# Local DB dumps (never commit)
+*.dump
+voctoweb-freifunk-*.dump
+voctoweb-pre-cutover.dump
+
+# One-off cutover/staging notes (not application code)
+/migration/
