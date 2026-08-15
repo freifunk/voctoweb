@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class SiteSettings < ApplicationRecord
-  DEFAULT_LOGO_URL = 'https://static.media.ccc.de/logos/voctocat-header.svg'
-  DEFAULT_LOGO_ALT = 'media.ccc.de logo, a lucky cat holding a play icon'
-  DEFAULT_BANNER_URL = 'https://static.media.ccc.de/media/promoted_bg.png'
+  # Prefer Admin → Site settings for production logo/banner URLs on the CDN.
+  # Defaults use fingerprinted local assets so Docker/dev works without CDN.
+  DEFAULT_LOGO_ALT = 'media.freifunk.net logo'
 
   validate :promoted_banner_url_valid
   validate :live_banner_url_valid
@@ -20,18 +20,24 @@ class SiteSettings < ApplicationRecord
   end
 
   def logo_url_or_default
-    logo_url.presence || DEFAULT_LOGO_URL
+    logo_url.presence || default_asset_url('frontend/voctocat-header.svg')
   end
 
   def promoted_banner_style
-    background_image_style(promoted_banner_url.presence || DEFAULT_BANNER_URL)
+    background_image_style(promoted_banner_url.presence || default_asset_url('frontend/promoted_bg.jpg'))
   end
 
   def live_banner_style
-    background_image_style(live_banner_url.presence || promoted_banner_url.presence || DEFAULT_BANNER_URL)
+    background_image_style(
+      live_banner_url.presence || promoted_banner_url.presence || default_asset_url('frontend/promoted_bg.jpg')
+    )
   end
 
   private
+
+  def default_asset_url(path)
+    ActionController::Base.helpers.asset_path(path)
+  end
 
   def background_image_style(url)
     return nil if url.blank?

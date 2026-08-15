@@ -57,7 +57,7 @@ module Feeds
     # @param item [RSS::Maker::Atom::Feed::Items::Item]
     # @param news [News] object
     def self.assign_item_options(item, news)
-      item.id              = "tag:media.ccc.de,#{news.created_at.strftime('%Y-%m-%d')}:#{news.id}"
+      item.id              = "tag:media.freifunk.net,#{news.created_at.strftime('%Y-%m-%d')}:#{news.id}"
       item.updated         = Time.now.utc.to_s
       item.title           = news.title
       item.content.content = news.body
@@ -72,7 +72,7 @@ module Feeds
     # @param feed [RSS::Maker::Atom::Feed] atom feed
     # @param options [Hash] options
     def self.assign_feed_options(feed, options)
-      feed.channel.id      = 'media.ccc.de,news'
+      feed.channel.id      = 'media.freifunk.net,news'
       feed.channel.author  = options[:author]
       feed.channel.updated = Time.now.utc.to_s
       feed.channel.about   = options[:about]

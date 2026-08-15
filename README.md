@@ -1,8 +1,12 @@
-# voctoweb
-Voctoweb is a rails application that provides a “YouTube like” user interface to video, audio and pdf files; a meta data editor; and APIs. For more infomation about relations to other components see [c3voc Wiki](https://c3voc.de/wiki/software:voctoweb).
+# voctoweb (media.freifunk.net)
 
-[![Tests](https://github.com/voc/voctoweb/actions/workflows/ci.yml/badge.svg)](https://github.com/voc/voctoweb/actions/workflows/ci.yml)
-[![Code Climate](https://codeclimate.com/github/voc/media.ccc.de.png)](https://codeclimate.com/github/voc/media.ccc.de)
+Fork of [voc/voctoweb](https://github.com/voc/voctoweb) for [media.freifunk.net](https://media.freifunk.net).
+
+- Branding overlay: [docs/BRANDING.md](docs/BRANDING.md)
+- Upstream sync: weekly `.github/workflows/sync-upstream.yml` + Renovate
+- Cutover/staging runbooks live locally in `migration/` (gitignored)
+
+Voctoweb is a rails application that provides a “YouTube like” user interface to video, audio and pdf files; a meta data editor; and APIs. Upstream docs: [c3voc Wiki](https://c3voc.de/wiki/software:voctoweb).
 
 ![Architecture overview](docs/architecture-overview.png)
 

@@ -1,32 +1,31 @@
 defaults: &defaults
   frontend_proto: http
-  frontend_host: localhost.c3voc.de
-  cdn_url: https://cdn.media.ccc.de
-  static_url: https://static.media.ccc.de/media
-  cors_url: https://media.ccc.de/srt
+  frontend_host: localhost
+  cdn_url: https://cdn.media.freifunk.net
+  static_url: https://cdn.media.freifunk.net
+  cors_url: https://cdn.media.freifunk.net
   folders:
     recordings_webroot: ''
     images_webroot: ""
     tmp_dir: "/tmp"
   header:
-    google: 2ozQIr-cQ-sJzGeJT_iTkS147fs3c5R3I1i6Dk_YLwA
+    google: ""
   feeds:
-    base_url: "http://localhost.c3voc.de/"
-    channel_title: Chaos Computer Club
-    channel_subtitle: A wide variety of video material distributed by the CCC. All content
-      is taken from cdn.localhost.c3voc.de and media.ccc.de
-    channel_description: Der Chaos Computer Club ist die größte europäische Hackervereinigung,
-      und seit über 25 Jahren Vermittler im Spannungsfeld technischer und sozialer Entwicklungen.
-    channel_summary: A wide variety of video material distributed by the Chaos Computer
-      Club.
-    channel_owner: CCC media team
-    channel_keywords: CCC Congress Hacking Security Netzpolitik
+    base_url: "http://localhost:3000/"
+    channel_title: Freifunk
+    channel_subtitle: A wide variety of video material distributed by the Freifunk community. All content
+      is taken from cdn.media.freifunk.net and media.freifunk.net
+    channel_description: Freifunk ist eine nicht-kommerzielle Initiative für freie Funknetzwerke.
+      media.freifunk.net bündelt Video- und Audiomaterial der Community.
+    channel_summary: A wide variety of video material distributed by the Freifunk community.
+    channel_owner: freifunk.net Webteam
+    channel_keywords: Freifunk Video Media Streaming Open Infrastructure
 
 development:
   <<: *defaults
 test:
   <<: *defaults
-  static_url: http://static.localhost.c3voc.de/media
+  static_url: https://cdn.media.freifunk.net
   folders:
     recordings_webroot: ''
     images_webroot: ''

@@ -36,7 +36,7 @@ body {
 }
 
 .btn-secondary {
-  @include button-variant(white, $gray, $gray-dark);
+  @include button-variant(white, #df3a6c, darken(#df3a6c, 8%));
 }
 
 .alert {
