@@ -2,7 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
-    // "config:best-practices"
   ],
   "schedule": [
     "before 1pm on Thursday"
@@ -12,6 +11,20 @@
   "automergeStrategy": "squash",
   "rebaseWhen": "behind-base-branch",
   "separateMajorMinor": false,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^UPSTREAM$/"],
+      "matchStrings": [
+        "voc/voctoweb@(?<currentDigest>[0-9a-f]{7,40})"
+      ],
+      "currentValueTemplate": "main",
+      "depNameTemplate": "voc/voctoweb",
+      "packageNameTemplate": "https://github.com/voc/voctoweb",
+      "datasourceTemplate": "git-refs",
+      "versioningTemplate": "git"
+    }
+  ],
   "packageRules": [
     {
       "matchPackageNames": ["ruby", "elasticsearch"],
@@ -26,7 +39,6 @@
       "matchManagers": ["bundler"],
       "groupName": "ruby dependencies",
       "groupSlug": "ruby"
-
     },
     {
       "matchManagers": ["github-actions"],
@@ -36,15 +48,13 @@
     {
       "matchManagers": ["dockerfile", "docker-compose"],
       "groupName": "docker dependencies",
-      "groupSlug": "docker",
-      "enabled": false
-    }/*,
+      "groupSlug": "docker"
+    },
     {
-      "matchPackagePatterns": ["*"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch"
-    } */
+      "matchDepNames": ["voc/voctoweb"],
+      "enabled": false,
+      "description": "SHA pin is informational; sync-upstream Action merges voc/main"
+    }
   ],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
