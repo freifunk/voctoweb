@@ -81,3 +81,8 @@ voctoweb-pre-cutover.dump
 
 # One-off cutover/staging notes (not application code)
 /migration/
+
+# Production Compose secrets (keep examples in git)
+/docker/production/.env
+/docker/production/database.yml
+/docker/production/settings.yml

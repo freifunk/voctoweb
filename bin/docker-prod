@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Helper for production Compose. Usage: bin/docker-prod <compose-args...>
+# Example: bin/docker-prod up -d
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "${ROOT}"
+ENV_FILE="${ROOT}/docker/production/.env"
+if [[ ! -f "${ENV_FILE}" ]]; then
+  echo "Missing ${ENV_FILE} — copy docker/production/env.example" >&2
+  exit 1
+fi
+exec docker compose --env-file "${ENV_FILE}" -f docker-compose.production.yml "$@"

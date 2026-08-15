@@ -52,7 +52,7 @@ Rails.application.configure do
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.
-  # config.assume_ssl = true
+  config.assume_ssl = ActiveModel::Type::Boolean.new.cast(ENV.fetch("RAILS_ASSUME_SSL", "true"))
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
@@ -76,7 +76,9 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
   # https://guides.rubyonrails.org/caching_with_rails.html#activesupport-cache-rediscachestore
-  config.cache_store = :redis_cache_store, { url: 'redis://localhost:6379/0' }
+  config.cache_store = :redis_cache_store, {
+    url: ENV.fetch("REDIS_CACHE_URL") { ENV.fetch("REDIS_URL", "redis://localhost:6379/0") }
+  }
   config.active_record.cache_versioning = false
 
   # Use a real queuing backend for Active Job (and separate queues per environment).

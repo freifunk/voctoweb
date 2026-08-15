@@ -1,0 +1,133 @@
+# Production stack for media.freifunk.net
+# TLS: terminate on the host (Caddy/nginx) → http://127.0.0.1:3000
+# Always: docker compose --env-file docker/production/.env -f docker-compose.production.yml …
+# Or: bin/docker-prod …
+name: voctoweb
+
+x-app-environment: &app-environment
+  RAILS_ENV: production
+  ELASTICSEARCH_URL: http://elasticsearch:9200
+  REDIS_URL: redis://redis:6379/1
+  REDIS_CACHE_URL: redis://redis:6379/0
+  RAILS_SERVE_STATIC_FILES: "true"
+  RAILS_ASSUME_SSL: "true"
+  SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE in docker/production/.env}
+  DEVISE_SECRET_KEY: ${DEVISE_SECRET_KEY:?set DEVISE_SECRET_KEY in docker/production/.env}
+  DEVISE_FROM: ${DEVISE_FROM:-noreply@media.freifunk.net}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in docker/production/.env}
+  SMTP_HOST: ${SMTP_HOST:-}
+  NOTIFY_SENDER: ${NOTIFY_SENDER:-}
+  NOTIFY_RECEIVER: ${NOTIFY_RECEIVER:-}
+
+services:
+  voctoweb:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      args:
+        RUBY_VERSION: "3.4"
+    image: voctoweb:production
+    restart: unless-stopped
+    environment:
+      <<: *app-environment
+    volumes:
+      - ./docker/production/database.yml:/voctoweb/config/database.yml:ro
+      - ./docker/production/settings.yml:/voctoweb/config/settings.yml:ro
+      - ./docker/production/puma.rb:/voctoweb/config/puma.rb:ro
+      - voctoweb_system:/voctoweb/public/system
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - internal
+
+  sidekiq:
+    image: voctoweb:production
+    restart: unless-stopped
+    command: ["bundle", "exec", "sidekiq"]
+    environment:
+      <<: *app-environment
+    volumes:
+      - ./docker/production/database.yml:/voctoweb/config/database.yml:ro
+      - ./docker/production/settings.yml:/voctoweb/config/settings.yml:ro
+      - voctoweb_system:/voctoweb/public/system
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - internal
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-voctoweb}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in docker/production/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-voctoweb}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Not published on the host. Dump/restore:
+    #   bin/docker-prod exec -T postgres pg_restore -U voctoweb -d voctoweb --no-owner --no-acl < dump
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - internal
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    networks:
+      - internal
+
+  elasticsearch:
+    image: elasticsearch:8.19.16
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      - cluster.name=voctoweb
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      # CORS only via elasticsearch.yml — never bare "*" as env (breaks overrides.yml)
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:9200 >/dev/null || wget -q -O /dev/null http://127.0.0.1:9200 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+    networks:
+      - internal
+
+volumes:
+  postgres_data:
+  redis_data:
+  es_data:
+  voctoweb_system:
+
+networks:
+  internal:
+    driver: bridge
