@@ -1,0 +1,18 @@
+# Example Duply PRE hook — dump Postgres before the file backup runs.
+#
+# In your Duply profile (e.g. /etc/duply/voctoweb/conf):
+#
+#   PRE="nice /srv/voctoweb/bin/docker-prod-backup-db"
+#   SOURCE='/var/backups/voctoweb'
+#
+# Or append the dump dir to an existing SOURCE that already covers /srv:
+#
+#   SOURCE='/srv/voctoweb/docker/production /var/backups/voctoweb'
+#
+# Notes:
+# - Prefer the custom-format dump over backing up the raw Postgres volume.
+# - Elasticsearch and Redis need no backup for cutover-style recovery
+#   (reindex + empty redis). CDN files stay on the CDN.
+# - Run Duply as a user that can talk to Docker (group `docker`) and write
+#   BACKUP_DIR (default /var/backups/voctoweb).
+# - Optional: BACKUP_DIR=/other/path BACKUP_KEEP_DAYS=30 in the environment.

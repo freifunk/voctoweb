@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Deploy latest main (or BRANCH) via production Compose.
+# Usage: bin/docker-prod-deploy
+# Env: BRANCH=main (default), SKIP_MIGRATE=1, SKIP_PULL=1
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "${ROOT}"
+BRANCH="${BRANCH:-main}"
+COMPOSE=("${ROOT}/bin/docker-prod")
+
+if [[ ! -x "${COMPOSE[0]}" ]]; then
+  echo "missing bin/docker-prod" >&2
+  exit 1
+fi
+
+if [[ "${SKIP_PULL:-}" != "1" ]]; then
+  echo "==> git fetch / ff-only ${BRANCH}"
+  git fetch origin "${BRANCH}"
+  git checkout "${BRANCH}"
+  git pull --ff-only origin "${BRANCH}"
+fi
+
+echo "==> build images"
+"${COMPOSE[@]}" build
+
+if [[ "${SKIP_MIGRATE:-}" != "1" ]]; then
+  echo "==> db:migrate"
+  "${COMPOSE[@]}" run --rm voctoweb bundle exec rails db:migrate
+fi
+
+echo "==> up -d"
+"${COMPOSE[@]}" up -d --remove-orphans
+
+echo "==> status"
+"${COMPOSE[@]}" ps
+echo "Deploy done."

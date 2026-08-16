@@ -72,15 +72,29 @@ $COMPOSE run --rm voctoweb bundle exec rails db:prepare
 $COMPOSE up -d
 ```
 
-## Updates
+## Updates / deploy
 
 ```bash
-cd /srv/voctoweb
-git pull
-$COMPOSE build
-$COMPOSE run --rm voctoweb bundle exec rails db:migrate
-$COMPOSE up -d
+# as user voctoweb, from the checkout:
+bin/docker-prod-deploy
+# SKIP_PULL=1 bin/docker-prod-deploy          # rebuild current tree only
+# SKIP_MIGRATE=1 bin/docker-prod-deploy       # code-only, no migrations
 ```
+
+Flow: `git pull --ff-only` → `build` → `db:migrate` → `up -d`. Renovate / `sync-upstream` only open PRs — merge on GitHub, then run deploy on the server (do not auto-deploy every PR).
+
+Compose services use `restart: unless-stopped`; with `docker.service` enabled that is enough for reboot. An extra systemd unit is optional.
+
+## Backups (Duply + Postgres dump)
+
+Postgres is the source of truth. Dump before Duply runs:
+
+```bash
+# writes /var/backups/voctoweb/voctoweb-latest.dump (+ dated copy)
+bin/docker-prod-backup-db
+```
+
+Wire into Duply via [duply-pre.example](duply-pre.example) (`PRE=…`, include `BACKUP_DIR` in `SOURCE`). Do not rely on volume-level copies of `postgres_data` alone.
 
 ## Notes
 
