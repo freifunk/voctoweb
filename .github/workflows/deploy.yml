@@ -1,33 +1,14 @@
-name: Deploy staging
+# Disabled on freifunk/voctoweb — Capistrano deploy targets VOC staging
+# (app.media.test.c3voc.de) and secrets we do not have.
+# Keep this file so upstream sync conflicts are obvious; resolve by keeping ours.
+name: Deploy staging (disabled)
 
 on:
   workflow_dispatch:
 
 jobs:
   deploy:
+    if: false
     runs-on: ubuntu-latest
-    environment:
-      name: staging
-      url: https://media.test.c3voc.de
-
     steps:
-      - uses: actions/checkout@v7
-      - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - uses: webfactory/ssh-agent@v0.10.0
-        with:
-          # Name of the variable configured in Secrets of our GitHub organisation
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Add server to known_hosts
-        run: ssh-keyscan -p 22 -H app.media.test.c3voc.de >> ~/.ssh/known_hosts
-      - name: Deploy
-        env:
-          CAP_REPO: https://github.com/voc/voctoweb.git
-          CAP_USER: media
-          CAP_BRANCH: ${{ github.ref_name }}
-          CAP_HOST: app.media.test.c3voc.de
-          CAP_PORT: 22
-          SKIP_TAG: "true"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bundle exec cap staging deploy
+      - run: echo "VOC staging deploy is disabled on freifunk/voctoweb"

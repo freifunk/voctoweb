@@ -38,3 +38,15 @@ This fork tracks [voc/voctoweb](https://github.com/voc/voctoweb) `main` and appl
 - Weekly GitHub Action: `.github/workflows/sync-upstream.yml`
 - Renovate: gems, Docker images, Actions (`renovate.json`)
 - Do not mix branding edits into VOC sync or dependency PRs
+
+## GitHub Actions (Freifunk)
+
+| Workflow | Status |
+|----------|--------|
+| `ci.yml` (Tests) | **keep** — runs on push/PR |
+| `sync-upstream.yml` | **keep** — Freifunk-only |
+| `deploy.yml` | disabled — VOC Capistrano staging |
+| `container-images.yml` | disabled — pushes `ghcr.io/voc/voctoweb` |
+| `dependabot-auto-merge.yml` | disabled — use Renovate; was VOC-only |
+
+On sync conflicts in those disabled workflow files, **keep the Freifunk (disabled) versions**.
