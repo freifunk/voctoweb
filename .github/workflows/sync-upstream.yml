@@ -83,9 +83,10 @@ jobs:
           ${STATUS_LINE}
 
           ## Checklist
-          - [ ] CI green
+          - [ ] CI green (`Tests` workflow)
           - [ ] Branding overlay still correct (locales, footer, about, oembed, brand color)
-          - [ ] Smoke: home, search, about (after deploy to staging)
+          - [ ] Disabled VOC workflows still disabled (`deploy`, `container-images`, `dependabot-auto-merge`)
+          - [ ] Smoke: home, search, about (after deploy)
           EOF
           )
           EXISTING=$(gh pr list --head "${BRANCH}" --json number --jq '.[0].number // empty')
