@@ -30,7 +30,7 @@ services:
       - postgres
       - redis
   postgres:
-    image: postgres:12-alpine
+    image: postgres:18-alpine
     volumes:
       - "./docker/db:/var/lib/postgresql/data"
     environment:
@@ -70,7 +70,7 @@ services:
   #   depends_on:
   #     - elasticsearch
   redis:
-    image: redis:6-alpine
+    image: redis:8-alpine
     ports:
       - "6379:6379"
   ssh-server:
