@@ -1,5 +1,14 @@
-# Merge voc/voctoweb main into freifunk/voctoweb weekly so the fork does not drift.
-# Conflicts in branding overlay files leave the PR open for manual resolution.
+# Rebase freifunk/voctoweb main onto voc/voctoweb main weekly, so the fork's
+# own commits (branding, docker, CI tweaks) always sit on top of upstream.
+#
+# This rewrites main and force-pushes it. Never land upstream changes via a
+# PR merge button ("Rebase and merge" / "Squash" rewrite upstream SHAs and
+# break the shared history; that is what caused the Aug–Nov 2026 drift).
+#
+# On conflicts nothing is pushed: the job fails and lists the conflicting
+# files. Resolve locally once:
+#   git fetch voc main && git rebase voc/main   # resolve, then
+#   git push --force-with-lease origin HEAD:main
 name: Sync upstream
 
 on:
@@ -10,7 +19,10 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
 
 jobs:
   sync:
@@ -19,6 +31,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          ref: main
           fetch-depth: 0
           token: ${{ secrets.SYNC_TOKEN }}
 
@@ -32,66 +45,55 @@ jobs:
           git remote add voc https://github.com/voc/voctoweb.git 2>/dev/null || git remote set-url voc https://github.com/voc/voctoweb.git
           git fetch voc main
 
-      - name: Merge voc/main
-        id: merge
+      - name: Rebase main onto voc/main
+        id: rebase
         shell: bash
         run: |
-          BRANCH="sync/voc-main-$(date -u +%Y%m%d)"
-          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
-          git checkout -B "${BRANCH}"
+          ORIG=$(git rev-parse HEAD)
+          echo "orig=${ORIG}" >> "$GITHUB_OUTPUT"
 
-          if git merge --no-edit voc/main; then
-            echo "conflicts=false" >> "$GITHUB_OUTPUT"
-            if [ -f UPSTREAM ]; then
-              SHA=$(git rev-parse voc/main)
-              printf 'voc/voctoweb@%s\n' "${SHA}" > UPSTREAM
-              git add UPSTREAM
-              git diff --cached --quiet || git commit -m "chore(sync): bump UPSTREAM to ${SHA}"
+          if git merge-base --is-ancestor voc/main HEAD; then
+            echo "Already up to date with voc/main."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if ! git rebase voc/main; then
+            {
+              echo "## Upstream sync: rebase conflicts"
+              echo
+              echo "Nothing was pushed. Conflicting files:"
+              echo
+              git diff --name-only --diff-filter=U | sed 's/^/- `/; s/$/`/'
+              echo
+              echo "Resolve locally: \`git fetch voc main && git rebase voc/main\`, then \`git push --force-with-lease origin HEAD:main\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+            git rebase --abort
+            exit 1
+          fi
+
+          SHA=$(git rev-parse voc/main)
+          printf 'voc/voctoweb@%s\n' "${SHA}" > UPSTREAM
+          git add UPSTREAM
+          if ! git diff --cached --quiet; then
+            # Keep a single bump commit on top instead of piling them up.
+            if git log -1 --format=%s | grep -q '^chore(sync): bump UPSTREAM'; then
+              git commit --amend -m "chore(sync): bump UPSTREAM to ${SHA}"
+            else
+              git commit -m "chore(sync): bump UPSTREAM to ${SHA}"
             fi
-          else
-            echo "conflicts=true" >> "$GITHUB_OUTPUT"
-            # Only stage conflicted tracked files — never git add -A (dumps/secrets).
-            mapfile -t CONFLICTED < <(git diff --name-only --diff-filter=U)
-            if [ "${#CONFLICTED[@]}" -eq 0 ]; then
-              echo "Merge failed but no unmerged paths; aborting." >&2
-              git merge --abort
-              exit 1
-            fi
-            git add -- "${CONFLICTED[@]}"
-            git commit -m "chore(sync): merge voc/main with conflicts (resolve before merge)"
           fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
-      - name: Push branch
-        run: git push -u origin "HEAD:${{ steps.merge.outputs.branch }}" --force-with-lease
+          {
+            echo "## Upstream sync: rebased onto voc/main@${SHA:0:7}"
+            echo
+            echo "Fork commits on top of upstream:"
+            echo
+            git log --format='- %h %s' voc/main..HEAD
+          } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Open or update pull request
-        env:
-          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
-          BRANCH: ${{ steps.merge.outputs.branch }}
-          CONFLICTS: ${{ steps.merge.outputs.conflicts }}
-        run: |
-          TITLE="chore(sync): merge voc/main $(date -u +%Y-%m-%d)"
-          if [ "${CONFLICTS}" = "true" ]; then
-            STATUS_LINE="**Merge conflicts detected** — resolve branding overlay files, then merge. Only conflicted tracked paths were staged."
-          else
-            STATUS_LINE="No conflicts. Review CI, then merge."
-          fi
-          BODY=$(cat <<EOF
-          ## Summary
-          Weekly sync of [voc/voctoweb](https://github.com/voc/voctoweb) \`main\` into freifunk/voctoweb.
-
-          ${STATUS_LINE}
-
-          ## Checklist
-          - [ ] CI green (`Tests` workflow)
-          - [ ] Branding overlay still correct (locales, footer, about, oembed, brand color)
-          - [ ] Disabled VOC workflows still disabled (`deploy`, `container-images`, `dependabot-auto-merge`)
-          - [ ] Smoke: home, search, about (after deploy)
-          EOF
-          )
-          EXISTING=$(gh pr list --head "${BRANCH}" --json number --jq '.[0].number // empty')
-          if [ -n "${EXISTING}" ]; then
-            gh pr edit "${EXISTING}" --title "${TITLE}" --body "${BODY}"
-          else
-            gh pr create --base main --head "${BRANCH}" --title "${TITLE}" --body "${BODY}" || true
-          fi
+      - name: Force-push main
+        if: steps.rebase.outputs.changed == 'true'
+        # --force-with-lease: refuse if someone pushed to main during the run.
+        run: git push --force-with-lease="main:${{ steps.rebase.outputs.orig }}" origin HEAD:main

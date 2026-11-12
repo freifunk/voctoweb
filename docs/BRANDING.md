@@ -35,7 +35,9 @@ This fork tracks [voc/voctoweb](https://github.com/voc/voctoweb) `main` and appl
 
 ## Upstream sync
 
-- Weekly GitHub Action: `.github/workflows/sync-upstream.yml`
+- Weekly GitHub Action: `.github/workflows/sync-upstream.yml` **rebases** `main` onto `voc/main` and force-pushes it, so fork commits always sit on top of upstream
+- Never bring upstream changes in via a PR merge button (merge, squash or rebase): that rewrites or detaches upstream history and every later sync conflicts again
+- On rebase conflicts the action pushes nothing and fails; resolve once locally: `git fetch voc main && git rebase voc/main`, then `git push --force-with-lease origin HEAD:main`
 - Renovate: gems, Docker images, Actions (`renovate.json`)
 - Do not mix branding edits into VOC sync or dependency PRs
 
